@@ -1,31 +1,10 @@
+import {getAccessToken} from "./credential/credential.ts"
+
 import open from "open";
 
-const secretId = Deno.env.get("GO_CARD_LESS_SECRET_ID");
 
-const secretKey = Deno.env.get("GO_CARD_LESS_SECRET_KEY");
 
-if (!secretId || !secretKey) {
-  throw new Error("Missing environment variables");
-}
-
-const credentials: {
-  access: string;
-  refresh: string;
-  access_expires: number;
-  refresh_expires: number;
-} = await fetch(
-  "https://bankaccountdata.gocardless.com/api/v2/token/new/",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      secret_id: secretId,
-      secret_key: secretKey,
-    }),
-  },
-).then((res) => res.json());
+const accessToken:string = await getAccessToken();
 
 const institutions: {
   id: string;
@@ -49,7 +28,7 @@ for (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${credentials.access}`,
+      "Authorization": `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
       "redirect": `http://localhost:8080/${targetInstitution.id}/callback`,
@@ -95,7 +74,7 @@ const bankAccounts: string[] = await Promise.all(
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${credentials.access}`,
+          "Authorization": `Bearer ${accessToken}`,
         },
       },
     ).then((res) => res.json()).then((resp) => resp.accounts);
@@ -109,7 +88,7 @@ for (const bankAccount of bankAccounts) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${credentials.access}`,
+        "Authorization": `Bearer ${accessToken}`,
       },
     },
   ).then((res) => res.json()).then(console.log);
