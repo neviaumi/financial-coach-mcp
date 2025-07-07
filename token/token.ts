@@ -6,6 +6,7 @@ const secretKey = Deno.env.get("GO_CARD_LESS_SECRET_KEY");
 if (!secretId || !secretKey) {
   throw new Error("Missing environment variables");
 }
+export type AccessToken = string;
 
 type Credentials = {
   access: string;
@@ -15,13 +16,15 @@ type Credentials = {
 };
 
 function isRefreshTokenCacheExists() {
-  return Deno.stat("./credential/refresh.json").then(() => true).catch(() =>
-    false
+  return Deno.stat("./token/refresh.json").then(() => true).catch((err) => {
+    console.log(err);
+   return false;
+  }
   );
 }
 
 async function getCachedRefreshToken() {
-  using file = await Deno.open("./credential/refresh.json", {
+  using file = await Deno.open("./token/refresh.json", {
     read: true,
   });
   const token: Omit<Credentials, "access" | "access_expires"> & {
@@ -33,7 +36,7 @@ async function getCachedRefreshToken() {
 }
 
 async function isCachedRefreshTokenValid() {
-  using file = await Deno.open("./credential/refresh.json", {
+  using file = await Deno.open("./token/refresh.json", {
     read: true,
   });
   const token: Omit<Credentials, "access" | "access_expires"> & {
@@ -47,8 +50,9 @@ async function isCachedRefreshTokenValid() {
 }
 
 async function cacheToken(credentials: Credentials) {
-  using file = await Deno.open("./credential/refresh.json", {
+  using file = await Deno.open("./token/refresh.json", {
     write: true,
+    createNew: true,
   });
   const encoder = new TextEncoder();
   await file.write(encoder.encode(JSON.stringify({
@@ -58,10 +62,10 @@ async function cacheToken(credentials: Credentials) {
   })));
 }
 
-export async function getAccessToken() {
+export async function getAccessToken(): Promise<AccessToken> {
   if (await isRefreshTokenCacheExists() && await isCachedRefreshTokenValid()) {
     return await fetch(
-      "https://bankaccountdata.gocardless.com/api/v2/token/new/",
+      "https://bankaccountdata.gocardless.com/api/v2/token/refresh/",
       {
         method: "POST",
         headers: {
@@ -71,9 +75,10 @@ export async function getAccessToken() {
           refresh: await getCachedRefreshToken(),
         }),
       },
-    ).then((res) => res.json()).then((creds) => creds.access);
+    ).then((res) => res.json())
+      .then((creds) => creds.access);
   } else {
-    await fetch(
+    return await fetch(
       "https://bankaccountdata.gocardless.com/api/v2/token/new/",
       {
         method: "POST",
@@ -86,7 +91,10 @@ export async function getAccessToken() {
         }),
       },
     ).then((res) => res.json())
-      .then((creds) => cacheToken(creds).then(() => creds.access));
+      .then((creds) =>
+        cacheToken(creds)
+          .then(() => creds.access)
+      );
   }
 }
 
