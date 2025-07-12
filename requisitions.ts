@@ -16,6 +16,8 @@ const institutions = {
   },
 };
 
+export type InstitutionID = keyof (typeof institutions);
+
 export function createRequisitionsRequestAgent(token: { access: string }) {
   return {
     getAccountsList: (requisitionId: string): Promise<string[]> => {
@@ -46,10 +48,13 @@ export function createRequisitionsRequestAgent(token: { access: string }) {
           },
         },
       ).then(convertFetchResponse).then((resp) =>
-        resp.results.find((result: { "institution_id": string }) =>
-          result["institution_id"] === institutionId
+        resp.results.find((
+          result: { "institution_id": string; "status": string },
+        ) =>
+          result["institution_id"] === institutionId &&
+          result["status"] === "LN"
         )
-      ).then(resp => {
+      ).then((resp) => {
         if (!resp) {
           throw new Error("Requisition not found");
         }

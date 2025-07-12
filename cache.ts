@@ -46,7 +46,7 @@ function updateCache(cacheKey: string, value: any, expireAt: number) {
     create: true,
   }).then((file) => {
     const encoder = new TextEncoder();
-    file.write(encoder.encode(JSON.stringify(cache))).finally(() => {
+    file.write(encoder.encode(JSON.stringify(cache, null, 4))).finally(() => {
       file.close();
     });
   });
@@ -82,7 +82,7 @@ export function withCache(key: string, options: {
         );
         return result;
       }
-      return cache[key];
+      return cache[key].value;
     };
   };
 }
