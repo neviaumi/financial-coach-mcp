@@ -17,10 +17,8 @@ type Credentials = {
 
 function isRefreshTokenCacheExists() {
   return Deno.stat("./token/refresh.json").then(() => true).catch((err) => {
-    console.log(err);
-   return false;
-  }
-  );
+    return false;
+  });
 }
 
 async function getCachedRefreshToken() {

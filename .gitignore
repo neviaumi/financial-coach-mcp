@@ -9,4 +9,5 @@
 *.pyc
 *.swp
 
-./token/refresh.json
+token/refresh.json
+.cache/

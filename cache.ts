@@ -1,0 +1,86 @@
+type Cache = {
+  [key: string]: {
+    value: unknown;
+    expireAt: number;
+  };
+};
+import { readAll } from "@std/io/read-all";
+import { isPromise } from "node:util/types";
+
+const cache = await Deno.open(".cache/cache.json", {
+  read: true,
+})
+  .then((file) => {
+    return readAll(file).finally(() => {
+      file.close();
+    });
+  })
+  .then((resp) => JSON.parse(new TextDecoder().decode(resp)));
+
+function isCacheExist(cacheKey: string) {
+  return (cache: Cache) => {
+    return cache[cacheKey];
+  };
+}
+
+function isCacheExpired(cacheKey: string) {
+  return (cache: Cache) => {
+    if (!isCacheExist(cacheKey)(cache)) return false;
+    const now = Temporal.Now.plainDateTimeISO();
+    const expireTime = Temporal.PlainDateTime.from(
+      new Date(cache[cacheKey].expireAt).toString(),
+    );
+    return now.until(expireTime).total("second") < 0;
+  };
+}
+
+function updateCache(cacheKey: string, value: any, expireAt: number) {
+  cache[cacheKey] = {
+    value,
+    expireAt,
+  };
+
+  Deno.open(".cache/cache.json", {
+    write: true,
+  }).then((file) => {
+    const encoder = new TextEncoder();
+    file.write(encoder.encode(JSON.stringify(cache))).finally(() => {
+      file.close();
+    });
+  });
+  return cache;
+}
+
+export function withCache(key: string, options: {
+  expireAt: Temporal.PlainDateTime;
+}) {
+  // deno-lint-ignore no-explicit-any
+  return function wrapper<T extends (...args: any[]) => any>(func: T) {
+    return (...args: Parameters<T>) => {
+      if (
+        ![isCacheExist(key), isCacheExpired(key)].some((check) => check(cache))
+      ) {
+        const result = func(...args);
+        if (isPromise(result)) {
+          return result.then((resolved) => {
+            updateCache(
+              key,
+              resolved,
+              options.expireAt.toZonedDateTime("UTC").toInstant()
+                .epochMilliseconds,
+            );
+            return resolved;
+          });
+        }
+        updateCache(
+          key,
+          result,
+          options.expireAt.toZonedDateTime("UTC").toInstant()
+            .epochMilliseconds,
+        );
+        return result;
+      }
+      return cache[key];
+    };
+  };
+}

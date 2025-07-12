@@ -1,6 +1,30 @@
+import { convertFetchResponse } from "./fetch.ts";
+type Account = {
+  resourceId: string;
+  scan: string;
+  currency: string;
+  ownerName: string;
+  // https://docs.neonomics.io/docs/iso-codes
+  // ISO20022 ExternalCashAccountType1Code
+  cashAccountType: string;
+  usage: string;
+};
+
+export function getConfirmedTransactionDateRange(today: Temporal.PlainDate) {
+  let startDate = today.subtract({ days: 8 }).with({ day: 1 });
+  let endDate = startDate.with({ day: startDate.daysInMonth });
+
+  if (today.since(endDate).total("day") < 8) {
+    startDate = startDate.subtract({ months: 1 }).with({ day: 1 });
+    endDate = startDate.with({ day: startDate.daysInMonth });
+  }
+
+  return { startDate, endDate };
+}
+
 export function createAccountsRequestAgent(token: { access: string }) {
   return {
-    getAccountDetail: (accountId: string) => {
+    getAccountDetail: (accountId: string): Promise<Account> => {
       return fetch(
         `https://bankaccountdata.gocardless.com/api/v2/accounts/${accountId}/details`,
         {
@@ -10,7 +34,31 @@ export function createAccountsRequestAgent(token: { access: string }) {
             "Authorization": `Bearer ${token.access}`,
           },
         },
-      ).then((res) => res.json()).then((res) => res.account);
+      ).then(convertFetchResponse);
+    },
+    getAccountTransactions: (
+      accountId: string,
+      dateFrom: Temporal.PlainDate,
+      dateTo: Temporal.PlainDate,
+    ): Promise<void> => {
+      const requestUrl = (() => {
+        const url = new URL(
+          `https://bankaccountdata.gocardless.com/api/v2/accounts/${accountId}/transactions`,
+        );
+        url.searchParams.set("date_from", dateFrom.toString());
+        url.searchParams.set("date_to", dateTo.toString());
+        return url;
+      })();
+      return fetch(
+        requestUrl,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token.access}`,
+          },
+        },
+      ).then(convertFetchResponse).then((res) => res.transactions["booked"]);
     },
   };
 }

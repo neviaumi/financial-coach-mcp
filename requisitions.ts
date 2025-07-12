@@ -1,4 +1,5 @@
 import open from "open";
+import { convertFetchResponse } from "./fetch.ts";
 
 const institutions = {
   ["HSBC_HBUKGB4B"]: {
@@ -27,7 +28,36 @@ export function createRequisitionsRequestAgent(token: { access: string }) {
             "Authorization": `Bearer ${token.access}`,
           },
         },
-      ).then((res) => res.json()).then((resp) => resp.accounts);
+      ).then(convertFetchResponse).then((resp) => resp.accounts);
+    },
+    getRequisition: (institutionId: keyof (typeof institutions)) => {
+      const query = new URLSearchParams();
+      query.set("limit", "128");
+      query.set("offset", "0");
+      return fetch(
+        new URL(
+          `https://bankaccountdata.gocardless.com/api/v2/requisitions?${query}`,
+        ),
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token.access}`,
+          },
+        },
+      ).then(convertFetchResponse).then((resp) =>
+        resp.results.find((result: { "institution_id": string }) =>
+          result["institution_id"] === institutionId
+        )
+      ).then(resp => {
+        if (!resp) {
+          throw new Error("Requisition not found");
+        }
+        return {
+          reference: resp.reference,
+          requisitionId: resp.id,
+        };
+      });
     },
     authenticate: async (
       loginReference: string,
@@ -48,7 +78,7 @@ export function createRequisitionsRequestAgent(token: { access: string }) {
             "user_language": "en",
           }),
         },
-      ).then((res) => res.json());
+      ).then(convertFetchResponse);
       console.log(`Open Link: ${requisitionSignInLink}`);
       const { promise, reject, resolve } = Promise.withResolvers();
       await open(requisitionSignInLink).then(() => {
