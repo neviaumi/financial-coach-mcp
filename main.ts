@@ -10,9 +10,10 @@ import {
 
 const result = withCache("testing", {
   expireAt: Temporal.Now.plainDateTimeISO().add({
-    days: 32,
+    seconds: 2,
   }),
 })<(input: number) => number>((input: number) => {
+  console.log("Called")
   return input * 10;
 })(10);
 console.log(result)

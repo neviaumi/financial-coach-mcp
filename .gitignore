@@ -10,4 +10,4 @@
 *.swp
 
 token/refresh.json
-.cache/
+.cache/cache.json

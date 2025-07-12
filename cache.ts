@@ -15,7 +15,8 @@ const cache = await Deno.open(".cache/cache.json", {
       file.close();
     });
   })
-  .then((resp) => JSON.parse(new TextDecoder().decode(resp)));
+  .then((resp) => JSON.parse(new TextDecoder().decode(resp)))
+  .catch(() => ({}));
 
 function isCacheExist(cacheKey: string) {
   return (cache: Cache) => {
@@ -27,9 +28,9 @@ function isCacheExpired(cacheKey: string) {
   return (cache: Cache) => {
     if (!isCacheExist(cacheKey)(cache)) return false;
     const now = Temporal.Now.plainDateTimeISO();
-    const expireTime = Temporal.PlainDateTime.from(
-      new Date(cache[cacheKey].expireAt).toString(),
-    );
+    const expireTime = Temporal.Instant.fromEpochMilliseconds(
+      cache[cacheKey].expireAt,
+    ).toZonedDateTimeISO("UTC").toPlainDateTime();
     return now.until(expireTime).total("second") < 0;
   };
 }
@@ -42,6 +43,7 @@ function updateCache(cacheKey: string, value: any, expireAt: number) {
 
   Deno.open(".cache/cache.json", {
     write: true,
+    create: true,
   }).then((file) => {
     const encoder = new TextEncoder();
     file.write(encoder.encode(JSON.stringify(cache))).finally(() => {
@@ -58,7 +60,7 @@ export function withCache(key: string, options: {
   return function wrapper<T extends (...args: any[]) => any>(func: T) {
     return (...args: Parameters<T>) => {
       if (
-        ![isCacheExist(key), isCacheExpired(key)].some((check) => check(cache))
+        !isCacheExist(key)(cache) || isCacheExpired(key)(cache)
       ) {
         const result = func(...args);
         if (isPromise(result)) {
