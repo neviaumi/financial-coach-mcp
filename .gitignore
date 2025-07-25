@@ -10,4 +10,5 @@
 *.swp
 
 token/refresh.json
-.cache/cache.json
+.cache/
+!.cache/.gitkeep

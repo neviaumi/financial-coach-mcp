@@ -53,9 +53,17 @@ function updateCache(cacheKey: string, value: any, expireAt: number) {
   return cache;
 }
 
-export function withCache(key: string, options: {
-  expireAt: Temporal.PlainDateTime;
-}) {
+export function withCache(
+  key: string,
+  options:
+    | {
+      expireAt: Temporal.PlainDateTime;
+    }
+    // deno-lint-ignore no-explicit-any
+    | ((...args: any[]) => {
+      expireAt: Temporal.PlainDateTime;
+    }),
+) {
   // deno-lint-ignore no-explicit-any
   return function wrapper<T extends (...args: any[]) => any>(func: T) {
     return (...args: Parameters<T>) => {
@@ -65,19 +73,25 @@ export function withCache(key: string, options: {
         const result = func(...args);
         if (isPromise(result)) {
           return result.then((resolved) => {
+            const _options = typeof options === "function"
+              ? options(resolved)
+              : options;
             updateCache(
               key,
               resolved,
-              options.expireAt.toZonedDateTime("UTC").toInstant()
+              _options.expireAt.toZonedDateTime("UTC").toInstant()
                 .epochMilliseconds,
             );
             return resolved;
           });
         }
+        const _options = typeof options === "function"
+          ? options(result)
+          : options;
         updateCache(
           key,
           result,
-          options.expireAt.toZonedDateTime("UTC").toInstant()
+          _options.expireAt.toZonedDateTime("UTC").toInstant()
             .epochMilliseconds,
         );
         return result;

@@ -1,7 +1,8 @@
 import { convertFetchResponse } from "./fetch.ts";
 type Account = {
   resourceId: string;
-  scan: string;
+  scan?: string;
+  maskedPan?: string;
   currency: string;
   ownerName: string;
   // https://docs.neonomics.io/docs/iso-codes
@@ -22,6 +23,38 @@ export function getConfirmedTransactionDateRange(today: Temporal.PlainDate) {
   return { startDate, endDate };
 }
 
+export function getAccountNumber(account: Account): string {
+  if (account.cashAccountType === "CARD") {
+    return account.maskedPan!;
+  }
+  return account.scan!.slice(6);
+}
+
+export function getAccountType(account: Account) {
+  if (account.cashAccountType === "CARD") {
+    return "CreditCard" as const;
+  }
+  return "Saving" as const;
+}
+
+export async function saveTransactionsAsMonthlyStatement(
+  yearMonthCode: string,
+  transactions: any[],
+) {
+  await Deno.mkdir(".cache/statements", { recursive: true });
+  await Deno.open(`.cache/statements/${yearMonthCode}.json`, {
+    write: true,
+    create: true,
+  }).then((file) => {
+    const encoder = new TextEncoder();
+    file.write(encoder.encode(JSON.stringify(transactions, null, 4))).finally(
+      () => {
+        file.close();
+      },
+    );
+  });
+}
+
 export function createAccountsRequestAgent(token: { access: string }) {
   return {
     getAccountDetail: (accountId: string): Promise<Account> => {
@@ -36,11 +69,12 @@ export function createAccountsRequestAgent(token: { access: string }) {
         },
       ).then(convertFetchResponse);
     },
+
     getAccountTransactions: (
       accountId: string,
       dateFrom: Temporal.PlainDate,
       dateTo: Temporal.PlainDate,
-    ): Promise<void> => {
+    ): Promise<any[]> => {
       const requestUrl = (() => {
         const url = new URL(
           `https://bankaccountdata.gocardless.com/api/v2/accounts/${accountId}/transactions`,
