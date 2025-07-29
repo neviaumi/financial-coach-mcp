@@ -1,15 +1,5 @@
 import { convertFetchResponse } from "./fetch.ts";
-type Account = {
-  resourceId: string;
-  scan?: string;
-  maskedPan?: string;
-  currency: string;
-  ownerName: string;
-  // https://docs.neonomics.io/docs/iso-codes
-  // ISO20022 ExternalCashAccountType1Code
-  cashAccountType: string;
-  usage: string;
-};
+import type { Account, Token, Transaction } from "./types.ts";
 
 export function getConfirmedTransactionDateRange(today: Temporal.PlainDate) {
   let startDate = today.subtract({ days: 8 }).with({ day: 1 });
@@ -37,25 +27,7 @@ export function getAccountType(account: Account) {
   return "Saving" as const;
 }
 
-export async function saveTransactionsAsMonthlyStatement(
-  yearMonthCode: string,
-  transactions: any[],
-) {
-  await Deno.mkdir(".cache/statements", { recursive: true });
-  await Deno.open(`.cache/statements/${yearMonthCode}.json`, {
-    write: true,
-    create: true,
-  }).then((file) => {
-    const encoder = new TextEncoder();
-    file.write(encoder.encode(JSON.stringify(transactions, null, 4))).finally(
-      () => {
-        file.close();
-      },
-    );
-  });
-}
-
-export function createAccountsRequestAgent(token: { access: string }) {
+export function createAccountsRequestAgent(token: Token) {
   return {
     getAccountDetail: (accountId: string): Promise<Account> => {
       return fetch(
@@ -74,7 +46,7 @@ export function createAccountsRequestAgent(token: { access: string }) {
       accountId: string,
       dateFrom: Temporal.PlainDate,
       dateTo: Temporal.PlainDate,
-    ): Promise<any[]> => {
+    ): Promise<Transaction[]> => {
       const requestUrl = (() => {
         const url = new URL(
           `https://bankaccountdata.gocardless.com/api/v2/accounts/${accountId}/transactions`,

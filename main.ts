@@ -9,8 +9,8 @@ import {
   getAccountNumber,
   getAccountType,
   getConfirmedTransactionDateRange,
-  saveTransactionsAsMonthlyStatement,
 } from "./accounts.ts";
+import { saveTransactionsAsMonthlyStatement } from "./bank-statements.ts";
 
 const accessToken: string = await getAccessToken();
 const { startDate, endDate } = getConfirmedTransactionDateRange(
@@ -26,7 +26,7 @@ function withThirtyTwoDayCache(key: string) {
   });
 }
 
-async function getBankStatement(institutionId: InstitutionID) {
+async function getTansactions(institutionId: InstitutionID) {
   const requisitionsRequestAgent = createRequisitionsRequestAgent({
     access: accessToken,
   });
@@ -52,12 +52,11 @@ async function getBankStatement(institutionId: InstitutionID) {
         `${institutionId}_ACCOUNT_DETAIL_${accountId}`,
       )(accountsRequestAgent.getAccountDetail)(accountId);
 
-      // const transactions = await accountsRequestAgent.getAccountTransactions(
-      //   accountId,
-      //   startDate,
-      //   endDate,
-      // );
-      const transactions = [{ "a": 1 }, { "a": 1 }, { "a": 1 }];
+      const transactions = await accountsRequestAgent.getAccountTransactions(
+        accountId,
+        startDate,
+        endDate,
+      );
       yield transactions.map((t) =>
         Object.assign(t, {
           bank: institutionId,
@@ -72,9 +71,7 @@ async function getBankStatement(institutionId: InstitutionID) {
 }
 
 const transactions = (await Array.fromAsync((async function* () {
-  yield getBankStatement("BARCLAYS_BUKBGB22");
-  yield getBankStatement("BARCLAYS_BUKBGB22");
-  yield getBankStatement("BARCLAYS_BUKBGB22");
+  yield getTansactions("BARCLAYS_BUKBGB22");
 })())).flat();
 await saveTransactionsAsMonthlyStatement(
   `${startDate.year}${startDate.monthCode}`,
