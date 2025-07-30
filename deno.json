@@ -2,7 +2,9 @@
   "tasks": {
     "dev": "deno run --watch main.ts"
   },
+  "nodeModulesDir": "auto",
   "imports": {
+    "@modelcontextprotocol/inspector": "npm:@modelcontextprotocol/inspector@0.16.2",
     "@std/assert": "jsr:@std/assert@1",
     "@std/io": "jsr:@std/io@0.225.2",
     "open": "npm:open@10.1.2",
