@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "default-server": {
+      "command": "deno",
+      "args": [
+        "run",
+        "-A",
+        "/Users/davidng/WebstormProjects/financial-coach-mcp/mcp/stdio.ts"
+      ]
+    }
+  }
+}

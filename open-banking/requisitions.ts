@@ -1,5 +1,5 @@
 import open from "open";
-import { convertFetchResponse } from "./fetch.ts";
+import { convertFetchResponse } from "@/utils/fetch.ts";
 
 const institutions = {
   ["HSBC_HBUKGB4B"]: {

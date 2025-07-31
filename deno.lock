@@ -7,8 +7,12 @@
     "jsr:@std/io@0.225.2": "0.225.2",
     "npm:@modelcontextprotocol/inspector@*": "0.16.2",
     "npm:@modelcontextprotocol/inspector@0.16.2": "0.16.2",
+    "npm:@modelcontextprotocol/sdk@1.17.1": "1.17.1_express@5.1.0_zod@3.25.76",
+    "npm:fetch-to-node@2.1.0": "2.1.0",
+    "npm:hono@4.8.10": "4.8.10",
     "npm:open@10.1.2": "10.1.2",
-    "npm:qrcode@1.5.4": "1.5.4"
+    "npm:qrcode@1.5.4": "1.5.4",
+    "npm:zod@3.10": "3.10.3"
   },
   "jsr": {
     "@std/assert@1.0.13": {
@@ -110,7 +114,7 @@
         "serve-handler",
         "tailwind-merge",
         "tailwindcss-animate",
-        "zod"
+        "zod@3.25.76"
       ],
       "bin": true
     },
@@ -121,7 +125,7 @@
         "cors",
         "express",
         "ws",
-        "zod"
+        "zod@3.25.76"
       ],
       "bin": true
     },
@@ -137,12 +141,12 @@
         "shell-quote",
         "spawn-rx",
         "ts-node",
-        "zod"
+        "zod@3.25.76"
       ],
       "bin": true
     },
-    "@modelcontextprotocol/sdk@1.17.0_express@5.1.0_zod@3.25.76": {
-      "integrity": "sha512-qFfbWFA7r1Sd8D697L7GkTd36yqDuTkvz0KfOGkgXR8EUhQn3/EDNIR/qUdQNMT8IjmasBvHWuXeisxtXTQT2g==",
+    "@modelcontextprotocol/sdk@1.17.1_express@5.1.0_zod@3.25.76": {
+      "integrity": "sha512-CPle1OQehbWqd25La9Ack5B07StKIxh4+Bf19qnpZKJC1oI22Y0czZHbifjw1UoczIfKBwBDAp/dFxvHG13B5A==",
       "dependencies": [
         "ajv",
         "content-type",
@@ -154,7 +158,7 @@
         "express-rate-limit",
         "pkce-challenge@5.0.0",
         "raw-body",
-        "zod",
+        "zod@3.25.76",
         "zod-to-json-schema"
       ]
     },
@@ -867,6 +871,9 @@
     "fast-json-stable-stringify@2.1.0": {
       "integrity": "sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw=="
     },
+    "fetch-to-node@2.1.0": {
+      "integrity": "sha512-Wq05j6LE1GrWpT2t1YbCkyFY6xKRJq3hx/oRJdWEJpZlik3g25MmdJS6RFm49iiMJw6zpZuBOrgihOgy2jGyAA=="
+    },
     "finalhandler@2.1.0": {
       "integrity": "sha512-/t88Ty3d5JWQbWYgaOGCCYfXRwV1+be02WqYYlL6h0lEiUAMPM8o8qKGO01YIkOHzka2up08wvgYD0mDiI+q3Q==",
       "dependencies": [
@@ -936,6 +943,9 @@
       "dependencies": [
         "function-bind"
       ]
+    },
+    "hono@4.8.10": {
+      "integrity": "sha512-DRMYbR3aFk6YET1FCSAFbgF2cWYTz5j0YAFYPECx9fmrbKBDAYnWU+YCgRTpOaatxMYN6e68U/2IG39zRP4W/A=="
     },
     "http-errors@2.0.0": {
       "integrity": "sha512-FtwrG/euBzaEjYeRqOgly7G0qviiXoJWnvEH2Z1plBdXgbyjv34pHTSb9zoeHMyDy33+DWy5Wt9Wo+TURtOYSQ==",
@@ -1401,7 +1411,7 @@
       "integrity": "sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==",
       "bin": true
     },
-    "ts-node@10.9.2_@types+node@22.15.15_typescript@5.8.3": {
+    "ts-node@10.9.2_@types+node@22.15.15_typescript@5.9.2": {
       "integrity": "sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==",
       "dependencies": [
         "@cspotcode/source-map-support",
@@ -1433,8 +1443,8 @@
         "mime-types@3.0.1"
       ]
     },
-    "typescript@5.8.3": {
-      "integrity": "sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==",
+    "typescript@5.9.2": {
+      "integrity": "sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==",
       "bin": true
     },
     "undici-types@6.21.0": {
@@ -1552,8 +1562,11 @@
     "zod-to-json-schema@3.24.6_zod@3.25.76": {
       "integrity": "sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg==",
       "dependencies": [
-        "zod"
+        "zod@3.25.76"
       ]
+    },
+    "zod@3.10.3": {
+      "integrity": "sha512-ngMXcA/TNXnlXWAmAdH98U6rV5W0K8wNASafMIYUuOrBfwtO7LyPXaOi/riRZns1qfWuE1lHr7gt9N4rmyYFlQ=="
     },
     "zod@3.25.76": {
       "integrity": "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="
@@ -1564,8 +1577,12 @@
       "jsr:@std/assert@1",
       "jsr:@std/io@0.225.2",
       "npm:@modelcontextprotocol/inspector@0.16.2",
+      "npm:@modelcontextprotocol/sdk@1.17.1",
+      "npm:fetch-to-node@2.1.0",
+      "npm:hono@4.8.10",
       "npm:open@10.1.2",
-      "npm:qrcode@1.5.4"
+      "npm:qrcode@1.5.4",
+      "npm:zod@3.10"
     ]
   }
 }

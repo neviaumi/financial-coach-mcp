@@ -1,4 +1,4 @@
-import { convertFetchResponse } from "./fetch.ts";
+import { convertFetchResponse } from "@/utils/fetch.ts";
 import type { Account, Token, Transaction } from "./types.ts";
 
 export function getConfirmedTransactionDateRange(today: Temporal.PlainDate) {

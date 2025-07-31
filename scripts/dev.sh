@@ -2,4 +2,4 @@
 
 set -ex
 
-deno run -A npm:@modelcontextprotocol/inspector
+deno run --allow-run --allow-env --allow-net --allow-read npm:@modelcontextprotocol/inspector --config mcp.json --server default-server

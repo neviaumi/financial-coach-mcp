@@ -1,4 +1,4 @@
-import { withCache } from "./cache.ts";
+import { withCache } from "@/utils/cache.ts";
 
 const secretId = Deno.env.get("GO_CARD_LESS_SECRET_ID");
 

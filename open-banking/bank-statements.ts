@@ -1,5 +1,7 @@
-import type { Transaction } from "./types.ts";
-export function fromTransactions(transactions: Transaction[]) {
+import type { Statement, Transaction } from "./types.ts";
+import { readAll } from "@std/io/read-all";
+
+export function fromTransactions(transactions: Transaction[]): Statement {
   const transactionsSorted = transactions
     .map((transaction) => {
       const to = (() => {
@@ -9,7 +11,7 @@ export function fromTransactions(transactions: Transaction[]) {
         return transaction.creditorName;
       })();
       return Object.assign(transaction, {
-        "to": to,
+        "to": to!,
       });
     })
     .toSorted((a, b) =>
@@ -28,11 +30,11 @@ export function fromTransactions(transactions: Transaction[]) {
     transactions: transactionsSorted,
   };
 }
+
 export async function saveTransactionsAsMonthlyStatement(
   yearMonthCode: string,
-  transactions: Transaction[],
+  statement: Statement,
 ) {
-  const statement = fromTransactions(transactions);
   await Deno.mkdir(".cache/statements", { recursive: true });
   await Deno.open(`.cache/statements/${yearMonthCode}.json`, {
     write: true,
@@ -44,5 +46,18 @@ export async function saveTransactionsAsMonthlyStatement(
         file.close();
       },
     );
+  });
+}
+
+export function getMonthlyStatement(yearMonthCode: string) {
+  return Deno.open(`.cache/statements/${yearMonthCode}.json`, {
+    read: true,
+  }).then(async (file) => {
+    const content = await readAll(file).finally(
+      () => {
+        file.close();
+      },
+    );
+    return JSON.parse(new TextDecoder().decode(content));
   });
 }

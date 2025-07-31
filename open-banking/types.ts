@@ -31,3 +31,14 @@ export type Transaction = {
   accountNumber: string;
   accountType: string;
 };
+
+export type Statement = {
+  info: {
+    sum: string;
+  };
+  transactions: Array<
+    Transaction & {
+      to: string;
+    }
+  >;
+};

@@ -1,23 +1,25 @@
-import { getAccessToken } from "./token.ts";
-import { withCache } from "./cache.ts";
+import { getAccessToken } from "@/open-banking/token.ts";
+import { withCache } from "@/utils/cache.ts";
 import {
   createRequisitionsRequestAgent,
   InstitutionID,
-} from "./requisitions.ts";
+} from "@/open-banking/requisitions.ts";
 import {
   createAccountsRequestAgent,
   getAccountNumber,
   getAccountType,
   getConfirmedTransactionDateRange,
-} from "./accounts.ts";
-import { saveTransactionsAsMonthlyStatement } from "./bank-statements.ts";
+} from "@/open-banking/accounts.ts";
+import {
+  fromTransactions,
+  saveTransactionsAsMonthlyStatement,
+} from "@/open-banking/bank-statements.ts";
 
 const accessToken: string = await getAccessToken();
 const { startDate, endDate } = getConfirmedTransactionDateRange(
   Temporal.Now.plainDateISO(),
 );
 
-console.log(`${startDate.year}${startDate.monthCode}`);
 function withThirtyTwoDayCache(key: string) {
   return withCache(key, {
     expireAt: Temporal.Now.plainDateTimeISO().add({
@@ -75,5 +77,5 @@ const transactions = (await Array.fromAsync((async function* () {
 })())).flat();
 await saveTransactionsAsMonthlyStatement(
   `${startDate.year}${startDate.monthCode}`,
-  transactions,
+  fromTransactions(transactions),
 );
