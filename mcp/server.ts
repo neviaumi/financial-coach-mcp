@@ -3,35 +3,43 @@ import { getMonthlyStatement } from "@/open-banking/bank-statements.ts";
 import * as z from "zod";
 
 const server = new McpServer({
-  name: "demo-server",
+  name: "financial-coach-mcp",
   version: "1.0.0",
+  title: "Financial Coach",
 });
 server.registerTool("getMonthlyBankStatement", {
   title: "getMonthlyBankStatement",
-  description: "Say hello to the world",
+  description:
+    "Retrieves the monthly bank statement for a specified year and month code.",
   inputSchema: {
-    yearMonthCode: z.string(),
+    yearMonthCode: z.string().describe(
+      "The year-month code in YYYYMmm format (e.g., '2023M01'), matching the regex /^\d{4}M\d{2}$/",
+    ),
   },
   outputSchema: {
     statement: z.object({
       info: z.object({
         sum: z.string(),
       }),
-      transactions: z.array(z.object({
-        transactionAmount: z.object({
-          amount: z.string(),
-          currenct: z.string(),
-        }),
-        bookingDate: z.string(),
-        bookingDateTime: z.string(),
-        to: z.string(),
-        bank: z.string(),
-        accountNumber: z.string(),
-        accountType: z.string(),
-      })),
+      transactions: z.array(
+        z.object({
+          transactionAmount: z.object({
+            amount: z.string(),
+            currency: z.string(),
+          }),
+          bookingDate: z.string(),
+          bookingDateTime: z.string(),
+          to: z.string(),
+          bank: z.string(),
+          accountNumber: z.string(),
+          accountType: z.string(),
+        }).passthrough(),
+      ),
     }),
   },
-}, async ({ yearMonthCode }) => {
+}, async ({ yearMonthCode }: {
+  yearMonthCode: string;
+}) => {
   try {
     const statement = await getMonthlyStatement(yearMonthCode);
     return {

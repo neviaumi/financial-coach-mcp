@@ -12,9 +12,11 @@ app.post("/mcp", async (c: Context) => {
     });
   await mcpServer.connect(transport);
   try {
+    //@ts-expect-error no typing here
     await transport.handleRequest(req, res, req.body);
   } catch {
     if (!res.headersSent) {
+      //@ts-expect-error no typing here
       res.status(500).json({
         jsonrpc: "2.0",
         error: {

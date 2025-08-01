@@ -12,7 +12,7 @@
     "npm:hono@4.8.10": "4.8.10",
     "npm:open@10.1.2": "10.1.2",
     "npm:qrcode@1.5.4": "1.5.4",
-    "npm:zod@3.10": "3.10.3"
+    "npm:zod@3.25.76": "3.25.76"
   },
   "jsr": {
     "@std/assert@1.0.13": {
@@ -114,7 +114,7 @@
         "serve-handler",
         "tailwind-merge",
         "tailwindcss-animate",
-        "zod@3.25.76"
+        "zod"
       ],
       "bin": true
     },
@@ -125,7 +125,7 @@
         "cors",
         "express",
         "ws",
-        "zod@3.25.76"
+        "zod"
       ],
       "bin": true
     },
@@ -141,7 +141,7 @@
         "shell-quote",
         "spawn-rx",
         "ts-node",
-        "zod@3.25.76"
+        "zod"
       ],
       "bin": true
     },
@@ -158,7 +158,7 @@
         "express-rate-limit",
         "pkce-challenge@5.0.0",
         "raw-body",
-        "zod@3.25.76",
+        "zod",
         "zod-to-json-schema"
       ]
     },
@@ -1562,11 +1562,8 @@
     "zod-to-json-schema@3.24.6_zod@3.25.76": {
       "integrity": "sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg==",
       "dependencies": [
-        "zod@3.25.76"
+        "zod"
       ]
-    },
-    "zod@3.10.3": {
-      "integrity": "sha512-ngMXcA/TNXnlXWAmAdH98U6rV5W0K8wNASafMIYUuOrBfwtO7LyPXaOi/riRZns1qfWuE1lHr7gt9N4rmyYFlQ=="
     },
     "zod@3.25.76": {
       "integrity": "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="
@@ -1582,7 +1579,7 @@
       "npm:hono@4.8.10",
       "npm:open@10.1.2",
       "npm:qrcode@1.5.4",
-      "npm:zod@3.10"
+      "npm:zod@3.25.76"
     ]
   }
 }
