@@ -7,7 +7,14 @@ type Cache = {
 import { readAll } from "@std/io/read-all";
 import { isPromise } from "node:util/types";
 
-const cache = await Deno.open(".cache/cache.json", {
+import { join } from "@std/path";
+
+export function filePathRelativeToCacheDir(filePath: string) {
+  const cacheDir = join(import.meta.dirname!, "../", ".cache");
+  return join(cacheDir, filePath);
+}
+
+const cache = await Deno.open(filePathRelativeToCacheDir("cache.json"), {
   read: true,
 })
   .then((file) => {
@@ -41,7 +48,7 @@ function updateCache(cacheKey: string, value: any, expireAt: number) {
     expireAt,
   };
 
-  Deno.open(".cache/cache.json", {
+  Deno.open(filePathRelativeToCacheDir("cache.json"), {
     write: true,
     create: true,
   }).then((file) => {

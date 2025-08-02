@@ -1,5 +1,6 @@
 import type { Statement, Transaction } from "./types.ts";
 import { readAll } from "@std/io/read-all";
+import { filePathRelativeToCacheDir } from "@/utils/cache.ts";
 
 export function fromTransactions(transactions: Transaction[]): Statement {
   const transactionsSorted = transactions
@@ -24,8 +25,15 @@ export function fromTransactions(transactions: Transaction[]): Statement {
     0.0,
   ) / 100;
   return {
-    info: {
-      sum: sum.toFixed(2),
+    balance: {
+      opening: {
+        amount: "0",
+        currency: "GBP",
+      },
+      closing: {
+        amount: sum.toFixed(2),
+        currency: "GBP",
+      },
     },
     transactions: transactionsSorted,
   };
@@ -35,11 +43,16 @@ export async function saveTransactionsAsMonthlyStatement(
   yearMonthCode: string,
   statement: Statement,
 ) {
-  await Deno.mkdir(".cache/statements", { recursive: true });
-  await Deno.open(`.cache/statements/${yearMonthCode}.json`, {
-    write: true,
-    create: true,
-  }).then((file) => {
+  await Deno.mkdir(filePathRelativeToCacheDir("statements"), {
+    recursive: true,
+  });
+  await Deno.open(
+    filePathRelativeToCacheDir(`statements/${yearMonthCode}.json`),
+    {
+      write: true,
+      create: true,
+    },
+  ).then((file) => {
     const encoder = new TextEncoder();
     file.write(encoder.encode(JSON.stringify(statement, null, 4))).finally(
       () => {
@@ -50,9 +63,12 @@ export async function saveTransactionsAsMonthlyStatement(
 }
 
 export function getMonthlyStatement(yearMonthCode: string) {
-  return Deno.open(`.cache/statements/${yearMonthCode}.json`, {
-    read: true,
-  }).then(async (file) => {
+  return Deno.open(
+    filePathRelativeToCacheDir(`statements/${yearMonthCode}.json`),
+    {
+      read: true,
+    },
+  ).then(async (file) => {
     const content = await readAll(file).finally(
       () => {
         file.close();

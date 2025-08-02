@@ -14,15 +14,17 @@ export type Token = {
   access: string;
 };
 
+export type Amount = {
+  amount: string;
+  currency: string;
+};
+
 export type Transaction = {
   bookingDate: string;
   valueDate?: string;
   bookingDateTime: string;
   valueDateTime?: string;
-  transactionAmount: {
-    amount: string;
-    currency: string;
-  };
+  transactionAmount: Amount;
   creditorName?: string;
   remittanceInformationUnstructured: string;
   merchantCategoryCode?: string;
@@ -33,8 +35,9 @@ export type Transaction = {
 };
 
 export type Statement = {
-  info: {
-    sum: string;
+  balance: {
+    opening: Amount;
+    closing: Amount;
   };
   transactions: Array<
     Transaction & {
