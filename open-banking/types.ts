@@ -19,6 +19,12 @@ export type Amount = {
   currency: string;
 };
 
+export type Institution = {
+  id: string;
+  accountNumber: string;
+  accountType: string;
+};
+
 export type Transaction = {
   bookingDate: string;
   valueDate?: string;
@@ -29,9 +35,7 @@ export type Transaction = {
   remittanceInformationUnstructured: string;
   merchantCategoryCode?: string;
   internalTransactionId: string;
-  bank: string;
-  accountNumber: string;
-  accountType: string;
+  institution: Institution;
 };
 
 export type Statement = {

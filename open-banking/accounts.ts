@@ -46,7 +46,9 @@ export function createAccountsRequestAgent(token: Token) {
       accountId: string,
       dateFrom: Temporal.PlainDate,
       dateTo: Temporal.PlainDate,
-    ): Promise<Transaction[]> => {
+    ): Promise<
+      { transactions: { booked: Transaction[]; "pending": Transaction[] } }
+    > => {
       const requestUrl = (() => {
         const url = new URL(
           `https://bankaccountdata.gocardless.com/api/v2/accounts/${accountId}/transactions`,
@@ -64,7 +66,7 @@ export function createAccountsRequestAgent(token: Token) {
             "Authorization": `Bearer ${token.access}`,
           },
         },
-      ).then(convertFetchResponse).then((res) => res.transactions["booked"]);
+      ).then(convertFetchResponse);
     },
   };
 }

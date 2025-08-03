@@ -48,7 +48,7 @@ function updateCache(cacheKey: string, value: any, expireAt: number) {
     expireAt,
   };
 
-  Deno.open(filePathRelativeToCacheDir("cache.json"), {
+  return Deno.open(filePathRelativeToCacheDir("cache.json"), {
     write: true,
     create: true,
   }).then((file) => {
@@ -57,7 +57,6 @@ function updateCache(cacheKey: string, value: any, expireAt: number) {
       file.close();
     });
   });
-  return cache;
 }
 
 export function withCache(
@@ -83,13 +82,12 @@ export function withCache(
             const _options = typeof options === "function"
               ? options(resolved)
               : options;
-            updateCache(
+            return updateCache(
               key,
               resolved,
               _options.expireAt.toZonedDateTime("UTC").toInstant()
                 .epochMilliseconds,
-            );
-            return resolved;
+            ).then(() => resolved);
           });
         }
         const _options = typeof options === "function"

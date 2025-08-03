@@ -4,6 +4,7 @@ import {
   createRequisitionsRequestAgent,
   InstitutionID,
 } from "@/open-banking/requisitions.ts";
+import { Transaction } from "@/open-banking/types.ts";
 import {
   createAccountsRequestAgent,
   getAccountNumber,
@@ -19,6 +20,7 @@ const accessToken: string = await getAccessToken();
 const { startDate, endDate } = getConfirmedTransactionDateRange(
   Temporal.Now.plainDateISO(),
 );
+const yearMonthCode = `${startDate.year}${startDate.monthCode}`;
 
 function withThirtyTwoDayCache(key: string) {
   return withCache(key, {
@@ -54,16 +56,23 @@ async function getTansactions(institutionId: InstitutionID) {
         `${institutionId}_ACCOUNT_DETAIL_${accountId}`,
       )(accountsRequestAgent.getAccountDetail)(accountId);
 
-      const transactions = await accountsRequestAgent.getAccountTransactions(
-        accountId,
-        startDate,
-        endDate,
-      );
-      yield transactions.map((t) =>
-        Object.assign(t, {
-          bank: institutionId,
-          accountNumber: getAccountNumber(accountDetail),
-          accountType: getAccountType(accountDetail),
+      const { transactions: { booked, _pending } } =
+        await withThirtyTwoDayCache(
+          `${institutionId}_ACCOUNT_TRANSACTIONS_${accountId}_${yearMonthCode}`,
+        )(
+          accountsRequestAgent.getAccountTransactions,
+        )(
+          accountId,
+          startDate,
+          endDate,
+        );
+      yield booked.map((bookedT: Transaction) =>
+        Object.assign(bookedT, {
+          institution: {
+            id: institutionId,
+            accountNumber: getAccountNumber(accountDetail),
+            accountType: getAccountType(accountDetail),
+          },
         })
       );
     }
@@ -76,6 +85,6 @@ const transactions = (await Array.fromAsync((async function* () {
   yield getTansactions("BARCLAYS_BUKBGB22");
 })())).flat();
 await saveTransactionsAsMonthlyStatement(
-  `${startDate.year}${startDate.monthCode}`,
+  yearMonthCode,
   fromTransactions(transactions),
 );

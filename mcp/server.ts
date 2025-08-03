@@ -71,9 +71,13 @@ server.registerTool("getMonthlyBankStatement", {
           bookingDate: z.string(),
           bookingDateTime: z.string(),
           to: z.string(),
-          bank: z.string(),
-          accountNumber: z.string(),
-          accountType: z.string(),
+          institution: z.object(
+            {
+              id: z.string(),
+              accountNumber: z.string(),
+              accountType: z.string(),
+            },
+          ),
         }).passthrough(),
       ),
     }),
