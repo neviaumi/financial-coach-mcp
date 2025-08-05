@@ -1,12 +1,9 @@
 import { withCache } from "@/utils/cache.ts";
+import {
+  APP_GO_CARD_LESS_SECRET_ID,
+  APP_GO_CARD_LESS_SECRET_KEY,
+} from "@/config.ts";
 
-const secretId = Deno.env.get("GO_CARD_LESS_SECRET_ID");
-
-const secretKey = Deno.env.get("GO_CARD_LESS_SECRET_KEY");
-
-if (!secretId || !secretKey) {
-  throw new Error("Missing environment variables");
-}
 export type AccessToken = string;
 
 type Credentials = {
@@ -36,8 +33,8 @@ export async function getAccessToken(): Promise<AccessToken> {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          secret_id: secretId,
-          secret_key: secretKey,
+          secret_id: APP_GO_CARD_LESS_SECRET_ID,
+          secret_key: APP_GO_CARD_LESS_SECRET_KEY,
         }),
       },
     ).then((res) => res.json())

@@ -1,7 +1,14 @@
 import QRCode from "qrcode";
 
-console.log("----".repeat(8))
-console.log(
-  await QRCode.toString("https://google.com", { type: "terminal", small: true }),
-);
-console.log("----".repeat(8))
+export function prepareQRCodeForURL(url: URL) {
+  return QRCode.toString(url.toString(), {
+    type: "terminal",
+    small: true,
+  });
+}
+
+export function printQRCode(qtCode: string) {
+  console.log("----".repeat(8));
+  console.log(qtCode);
+  console.log("----".repeat(8));
+}

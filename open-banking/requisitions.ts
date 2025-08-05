@@ -1,5 +1,7 @@
 import open from "open";
 import { convertFetchResponse } from "@/utils/fetch.ts";
+import { APP_OPENBANKING_HOST, APP_OPENBANKING_PORT } from "@/config.ts";
+import { prepareQRCodeForURL, printQRCode } from "@/utils/qr-code.ts";
 
 const institutions = {
   ["HSBC_HBUKGB4B"]: {
@@ -77,18 +79,24 @@ export function createRequisitionsRequestAgent(token: { access: string }) {
             "Authorization": `Bearer ${token.access}`,
           },
           body: JSON.stringify({
-            "redirect": `http://localhost:8080/${institutionId}/callback`,
+            "redirect": new URL(
+              `/${institutionId}/callback`,
+              `http://${APP_OPENBANKING_HOST}:${APP_OPENBANKING_PORT}`,
+            ).toString(),
             "institution_id": institutionId,
             "reference": loginReference,
             "user_language": "en",
           }),
         },
       ).then(convertFetchResponse);
-      console.log(`Open Link: ${requisitionSignInLink}`);
+      console.log(`Please scan the QR code to log in for ${institutionId}.`);
+      await prepareQRCodeForURL(new URL(requisitionSignInLink)).then(
+        printQRCode,
+      );
       const { promise, reject, resolve } = Promise.withResolvers();
       await open(requisitionSignInLink).then(() => {
         const server = Deno.serve({
-          port: 8080,
+          port: APP_OPENBANKING_PORT,
           hostname: "0.0.0.0",
         }, () => {
           setTimeout(() => {
