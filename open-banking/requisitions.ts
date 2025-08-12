@@ -80,7 +80,7 @@ export function createRequisitionsRequestAgent(token: { access: string }) {
           },
           body: JSON.stringify({
             "redirect": new URL(
-              `/${institutionId}/callback`,
+              `/auth/${institutionId}/callback`,
               `http://${APP_OPENBANKING_HOST}:${APP_OPENBANKING_PORT}`,
             ).toString(),
             "institution_id": institutionId,
