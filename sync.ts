@@ -1,3 +1,4 @@
+import { APP_ENABLED_REQUESITIONS } from "@/config.ts";
 import { getAccessToken } from "@/open-banking/token.ts";
 import { withCache } from "@/utils/cache.ts";
 import {
@@ -66,15 +67,14 @@ async function getTansactions(institutionId: InstitutionID) {
           startDate,
           endDate,
         );
-      yield booked.map((bookedT: Transaction) =>
-        Object.assign(bookedT, {
-          institution: {
-            id: institutionId,
-            accountNumber: getAccountNumber(accountDetail),
-            accountType: getAccountType(accountDetail),
-          },
-        })
-      );
+      yield booked.map((bookedT: Transaction) => ({
+        ...bookedT,
+        institution: {
+          id: institutionId,
+          accountNumber: getAccountNumber(accountDetail),
+          accountType: getAccountType(accountDetail),
+        },
+      }));
     }
   })(
     accounts,
@@ -82,7 +82,9 @@ async function getTansactions(institutionId: InstitutionID) {
 }
 
 const transactions = (await Array.fromAsync((async function* () {
-  yield getTansactions("BARCLAYS_BUKBGB22");
+  for (const ENABLED_REQUESTION of APP_ENABLED_REQUESITIONS) {
+    yield getTansactions(ENABLED_REQUESTION);
+  }
 })())).flat();
 await saveTransactionsAsMonthlyStatement(
   yearMonthCode,

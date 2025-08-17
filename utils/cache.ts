@@ -14,7 +14,13 @@ export function filePathRelativeToCacheDir(filePath: string) {
   return join(cacheDir, filePath);
 }
 
-const cache = await Deno.open(filePathRelativeToCacheDir("cache.json"), {
+function removeExpiredCache(cache: Cache) {
+  return Object.fromEntries(
+    Object.entries(cache).filter(([key]) => !isCacheExist(key)(cache)),
+  );
+}
+
+const cache: Cache = await Deno.open(filePathRelativeToCacheDir("cache.json"), {
   read: true,
 })
   .then((file) => {
@@ -22,7 +28,9 @@ const cache = await Deno.open(filePathRelativeToCacheDir("cache.json"), {
       file.close();
     });
   })
-  .then((resp) => JSON.parse(new TextDecoder().decode(resp)))
+  .then((resp) =>
+    removeExpiredCache(JSON.parse(new TextDecoder().decode(resp)))
+  )
   .catch(() => ({}));
 
 function isCacheExist(cacheKey: string) {
@@ -53,7 +61,9 @@ function updateCache(cacheKey: string, value: any, expireAt: number) {
     create: true,
   }).then((file) => {
     const encoder = new TextEncoder();
-    file.write(encoder.encode(JSON.stringify(cache, null, 4))).finally(() => {
+    file.write(
+      encoder.encode(JSON.stringify(removeExpiredCache(cache), null, 4)),
+    ).finally(() => {
       file.close();
     });
   });

@@ -17,6 +17,7 @@ else
     APP_ENV="PROD" deno \
     --env-file \
     --unstable-temporal \
+    --allow-sys \
     --allow-read \
     --allow-write \
     --allow-run \
