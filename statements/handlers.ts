@@ -20,9 +20,9 @@ app.get("/:yearMonthCode{.+\\.json}", (c: Context) => {
       );
     });
 }).get("/:yearMonthCode{.+\\.csv}", (c: Context) => {
-  return c.text("Not Implmented", 502);
+  return c.text("Not Implmented", 501);
 }).get("/:yearMonthCode{.+\\.html}", (c: Context) => {
-  return c.text("Not Implmented", 502);
+  return c.text("Not Implmented", 501);
 });
 
 export default app;
