@@ -1,10 +1,11 @@
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import mcpServer from "./server.ts";
 import { toFetchResponse, toReqRes } from "fetch-to-node";
-import { Context, Hono } from "hono";
+import type { Context } from "hono";
+import { factory } from "@/server/app-factory.ts";
 
-const app = new Hono();
-app.post("/mcp", async (c: Context) => {
+const app = factory.createApp();
+app.post("/", async (c: Context) => {
   const { req, res } = toReqRes(c.req.raw);
   const transport: StreamableHTTPServerTransport =
     new StreamableHTTPServerTransport({
@@ -28,8 +29,7 @@ app.post("/mcp", async (c: Context) => {
     }
   }
   return toFetchResponse(res);
-});
-app.get("/mcp", (c: Context) => {
+}).get("/", (c: Context) => {
   const { res } = toReqRes(c.req.raw);
   res.writeHead(405).end(JSON.stringify({
     jsonrpc: "2.0",
@@ -40,8 +40,7 @@ app.get("/mcp", (c: Context) => {
     id: null,
   }));
   return toFetchResponse(res);
-});
-app.delete("/mcp", (c: Context) => {
+}).delete("/mcp", (c: Context) => {
   const { res } = toReqRes(c.req.raw);
   res.writeHead(405).end(JSON.stringify({
     jsonrpc: "2.0",
@@ -54,6 +53,4 @@ app.delete("/mcp", (c: Context) => {
   return toFetchResponse(res);
 });
 
-export default {
-  fetch: app.fetch,
-} satisfies Deno.ServeDefaultExport;
+export default app;
