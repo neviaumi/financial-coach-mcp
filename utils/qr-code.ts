@@ -1,14 +1,24 @@
 import QRCode from "qrcode";
 
-export function prepareQRCodeForURL(url: URL) {
+export function prepareQRCodeForURL(url: URL): Promise<string> {
   return QRCode.toString(url.toString(), {
     type: "terminal",
-    small: true,
+    errorCorrectionLevel: "L",
   });
 }
 
 export function printQRCode(qtCode: string) {
-  console.log("----".repeat(8));
-  console.log(qtCode);
-  console.log("----".repeat(8));
+  const leftPadding = " ".repeat(16);
+  const lineLength = 24;
+  console.log(`${"----".repeat(lineLength)}
+`);
+  console.log(
+    `${
+      qtCode.trim().split("\n").map((line) => `${leftPadding}${line}`).join(
+        "\n",
+      )
+    }`,
+  );
+  console.log(`
+${"----".repeat(lineLength)}`);
 }
