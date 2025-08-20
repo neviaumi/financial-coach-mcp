@@ -83,7 +83,7 @@ export async function initializeCache(options?: {
                   ? options(resolved)
                   : options;
                 cache[key] = {
-                  value: result,
+                  value: resolved,
                   expireAt: _options.expireAt.toZonedDateTime("UTC").toInstant()
                     .epochMilliseconds,
                 };
