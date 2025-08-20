@@ -10,8 +10,8 @@ export function prepareQRCodeForURL(url: URL): Promise<string> {
 export function printQRCode(qtCode: string) {
   const padding = " ".repeat(4);
   const marginX = " ".repeat(16);
-  const lineLength = 24;
-  console.log(`${"----".repeat(lineLength)}
+  const borderX = 24;
+  console.log(`${"----".repeat(borderX)}
 `);
   console.log(
     `${
@@ -23,5 +23,5 @@ export function printQRCode(qtCode: string) {
     }`,
   );
   console.log(`
-${"----".repeat(lineLength)}`);
+${"----".repeat(borderX)}`);
 }
