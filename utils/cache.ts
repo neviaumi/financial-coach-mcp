@@ -15,33 +15,19 @@ export function filePathRelativeToCacheDir(filePath: string) {
 }
 
 function removeExpiredCache(cache: Cache) {
-  return Object.fromEntries(
-    Object.entries(cache).filter(([key]) => !isCacheExist(key)(cache)),
+  const result = Object.fromEntries(
+    Object.entries(cache).filter(([key]) => !isCacheExpired(cache)(key)),
   );
+  return result;
 }
 
-const cache: Cache = await Deno.open(filePathRelativeToCacheDir("cache.json"), {
-  read: true,
-})
-  .then((file) => {
-    return readAll(file).finally(() => {
-      file.close();
-    });
-  })
-  .then((resp) =>
-    removeExpiredCache(JSON.parse(new TextDecoder().decode(resp)))
-  )
-  .catch(() => ({}));
-
-function isCacheExist(cacheKey: string) {
-  return (cache: Cache) => {
-    return cache[cacheKey];
-  };
+function isCacheExist(cache: Cache) {
+  return (cacheKey: string) => cache[cacheKey];
 }
 
-function isCacheExpired(cacheKey: string) {
-  return (cache: Cache) => {
-    if (!isCacheExist(cacheKey)(cache)) return false;
+function isCacheExpired(cache: Cache) {
+  return (cacheKey: string) => {
+    if (!isCacheExist(cache)(cacheKey)) return false;
     const now = Temporal.Now.plainDateTimeISO();
     const expireTime = Temporal.Instant.fromEpochMilliseconds(
       cache[cacheKey].expireAt,
@@ -50,68 +36,89 @@ function isCacheExpired(cacheKey: string) {
   };
 }
 
-function updateCache(cacheKey: string, value: any, expireAt: number) {
-  cache[cacheKey] = {
-    value,
-    expireAt,
-  };
-
-  return Deno.open(filePathRelativeToCacheDir("cache.json"), {
-    write: true,
-    create: true,
-  }).then((file) => {
-    const encoder = new TextEncoder();
-    file.write(
-      encoder.encode(JSON.stringify(removeExpiredCache(cache), null, 4)),
-    ).finally(() => {
-      file.close();
+export async function initializeCache(options?: {
+  filePath?: string;
+}) {
+  const filePath = options?.filePath ??
+    filePathRelativeToCacheDir("cache.json");
+  const cache: Cache = await Deno.open(
+    filePath,
+    {
+      read: true,
+    },
+  )
+    .then((file) =>
+      readAll(file).finally(() => {
+        file.close();
+      })
+    )
+    .then((resp) =>
+      removeExpiredCache(JSON.parse(new TextDecoder().decode(resp)))
+    )
+    .catch(() => {
+      return ({});
     });
-  });
-}
-
-export function withCache(
-  key: string,
-  options:
-    | {
-      expireAt: Temporal.PlainDateTime;
-    }
-    // deno-lint-ignore no-explicit-any
-    | ((...args: any[]) => {
-      expireAt: Temporal.PlainDateTime;
-    }),
-) {
-  // deno-lint-ignore no-explicit-any
-  return function wrapper<T extends (...args: any[]) => any>(func: T) {
-    return (...args: Parameters<T>) => {
-      if (
-        !isCacheExist(key)(cache) || isCacheExpired(key)(cache)
-      ) {
-        const result = func(...args);
-        if (isPromise(result)) {
-          return result.then((resolved) => {
-            const _options = typeof options === "function"
-              ? options(resolved)
-              : options;
-            return updateCache(
-              key,
-              resolved,
-              _options.expireAt.toZonedDateTime("UTC").toInstant()
-                .epochMilliseconds,
-            ).then(() => resolved);
-          });
+  return {
+    withCache(
+      key: string,
+      options:
+        | {
+          expireAt: Temporal.PlainDateTime;
         }
-        const _options = typeof options === "function"
-          ? options(result)
-          : options;
-        updateCache(
-          key,
-          result,
-          _options.expireAt.toZonedDateTime("UTC").toInstant()
-            .epochMilliseconds,
-        );
-        return result;
-      }
-      return cache[key].value;
-    };
+        // deno-lint-ignore no-explicit-any
+        | ((...args: any[]) => {
+          expireAt: Temporal.PlainDateTime;
+        }),
+    ) {
+      // deno-lint-ignore no-explicit-any
+      return function wrapper<T extends (...args: any[]) => any>(func: T) {
+        return (...args: Parameters<T>) => {
+          if (
+            !isCacheExist(cache)(key) || isCacheExpired(cache)(key)
+          ) {
+            const result = func(...args);
+            if (isPromise(result)) {
+              return result.then((resolved) => {
+                const _options = typeof options === "function"
+                  ? options(resolved)
+                  : options;
+                cache[key] = {
+                  value: result,
+                  expireAt: _options.expireAt.toZonedDateTime("UTC").toInstant()
+                    .epochMilliseconds,
+                };
+                return resolved;
+              });
+            }
+            const _options = typeof options === "function"
+              ? options(result)
+              : options;
+            cache[key] = {
+              value: result,
+              expireAt: _options.expireAt.toZonedDateTime("UTC").toInstant()
+                .epochMilliseconds,
+            };
+            return result;
+          }
+          return cache[key].value;
+        };
+      };
+    },
+    [Symbol.asyncDispose]() {
+      return this.close();
+    },
+    close() {
+      return Deno.open(filePath, {
+        write: true,
+        create: true,
+      }).then((file) => {
+        const encoder = new TextEncoder();
+        file.write(
+          encoder.encode(JSON.stringify(removeExpiredCache(cache), null, 4)),
+        ).finally(() => {
+          file.close();
+        });
+      });
+    },
   };
 }

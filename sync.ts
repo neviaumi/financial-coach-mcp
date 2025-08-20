@@ -1,6 +1,10 @@
 import { APP_ENABLED_REQUESITIONS } from "@/config.ts";
-import { getAccessToken } from "@/open-banking/token.ts";
-import { withCache } from "@/utils/cache.ts";
+import {
+  Credentials,
+  getAccessToken,
+  initializeAccessToken,
+} from "@/open-banking/token.ts";
+import { initializeCache } from "@/utils/cache.ts";
 import {
   createRequisitionsRequestAgent,
   InstitutionID,
@@ -17,19 +21,30 @@ import {
   saveTransactionsAsMonthlyStatement,
 } from "@/open-banking/bank-statements.ts";
 
-const accessToken: string = await getAccessToken();
-const { startDate, endDate } = getConfirmedTransactionDateRange(
-  Temporal.Now.plainDateISO(),
-);
-const yearMonthCode = `${startDate.year}${startDate.monthCode}`;
-
+await using cache = await initializeCache();
 function withThirtyTwoDayCache(key: string) {
-  return withCache(key, {
+  return cache.withCache(key, {
     expireAt: Temporal.Now.plainDateTimeISO().add({
       days: 32,
     }),
   });
 }
+
+const { refresh } = await cache.withCache(
+  "REFRESH_TOKEN",
+  (creds: Credentials) => {
+    return {
+      expireAt: Temporal.Instant.fromEpochMilliseconds(
+        new Date().getTime() + (creds.refresh_expires * 1000),
+      ).toZonedDateTimeISO("UTC").toPlainDateTime(),
+    };
+  },
+)(initializeAccessToken)();
+const accessToken: string = await getAccessToken(refresh);
+const { startDate, endDate } = getConfirmedTransactionDateRange(
+  Temporal.Now.plainDateISO(),
+);
+const yearMonthCode = `${startDate.year}${startDate.monthCode}`;
 
 async function getTansactions(institutionId: InstitutionID) {
   const requisitionsRequestAgent = createRequisitionsRequestAgent({

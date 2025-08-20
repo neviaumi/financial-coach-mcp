@@ -1,7 +1,4 @@
 {
-  "tasks": {
-    "dev": "deno run --watch main.ts"
-  },
   "nodeModulesDir": "auto",
   "imports": {
     "@modelcontextprotocol/inspector": "npm:@modelcontextprotocol/inspector@0.16.2",
