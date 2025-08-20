@@ -8,13 +8,16 @@ export function prepareQRCodeForURL(url: URL): Promise<string> {
 }
 
 export function printQRCode(qtCode: string) {
-  const leftPadding = " ".repeat(16);
+  const padding = " ".repeat(4);
+  const marginX = " ".repeat(16);
   const lineLength = 24;
   console.log(`${"----".repeat(lineLength)}
 `);
   console.log(
     `${
-      qtCode.trim().split("\n").map((line) => `${leftPadding}${line}`).join(
+      qtCode.trim().split("\n").map((line) =>
+        `${marginX}|${padding}${line}${padding}|${marginX}`
+      ).join(
         "\n",
       )
     }`,
