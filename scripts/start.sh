@@ -5,7 +5,7 @@ set -ex
 MODE=${1:---dev}
 
 if [ "$MODE" == "--dev" ]; then
-    deno serve --allow-env --allow-read --watch-hmr ./server/main.ts
+    deno serve --allow-env --allow-read --port 8084 --watch-hmr ./server/main.ts
 else
-    deno serve --allow-env --allow-read ./server/main.ts
+    deno serve --allow-env --allow-read --port 8084 ./server/main.ts
 fi

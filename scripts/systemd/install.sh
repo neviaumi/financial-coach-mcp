@@ -26,7 +26,7 @@ Description=$APP_DESCRIPTION
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/bash "$ACTUAL_SCRIPT_PATH"
+ExecStart=/usr/bin/bash "$ACTUAL_SCRIPT_PATH" --prod
 Restart=always
 
 [Install]
