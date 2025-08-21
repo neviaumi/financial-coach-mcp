@@ -24,7 +24,7 @@ Description=$APP_DESCRIPTION
 After=network.target
 
 [Service]
-Environment="DENO_HOME=$HOME/.deno"
+Environment="DENO_HOME=$HOME/.deno;PWD=$WORKING_DIRECTORY"
 WorkingDirectory=$WORKING_DIRECTORY
 ExecStart=/usr/bin/bash "$ACTUAL_SCRIPT_PATH" --prod
 Restart=always
