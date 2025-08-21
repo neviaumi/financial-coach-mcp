@@ -11,12 +11,10 @@ echo "--- Starting systemd service installation ---"
 
 # Get the absolute path of the directory where this script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-
-# Define the relative path from the script's directory to the target script
-RELATIVE_SCRIPT_PATH="../start.sh"
+WORKING_DIRECTORY="$(realpath "${SCRIPT_DIR}/../../")"
 
 # Use realpath to get the canonical absolute path of the start.sh script
-ACTUAL_SCRIPT_PATH="$(realpath "${SCRIPT_DIR}/${RELATIVE_SCRIPT_PATH}")"
+ACTUAL_SCRIPT_PATH="$(realpath "${WORKING_DIRECTORY}/scripts/start.sh")"
 echo "INFO: Target script absolute path is: ${ACTUAL_SCRIPT_PATH}"
 # Define the service file content and replace the placeholder path using sed
 echo "INFO: Generating systemd service file content..."
@@ -27,6 +25,7 @@ After=network.target
 
 [Service]
 Environment="DENO_HOME=$HOME/.deno"
+WorkingDirectory=$WORKING_DIRECTORY
 ExecStart=/usr/bin/bash "$ACTUAL_SCRIPT_PATH" --prod
 Restart=always
 
