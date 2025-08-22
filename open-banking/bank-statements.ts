@@ -62,7 +62,7 @@ export async function saveTransactionsAsMonthlyStatement(
   });
 }
 
-export function getMonthlyStatement(yearMonthCode: string) {
+export function getMonthlyStatement(yearMonthCode: string): Promise<Statement> {
   return Deno.open(
     filePathRelativeToCacheDir(`statements/${yearMonthCode}.json`),
     {

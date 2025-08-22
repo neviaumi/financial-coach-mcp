@@ -3,10 +3,12 @@
   "specifiers": {
     "jsr:@std/assert@1": "1.0.13",
     "jsr:@std/bytes@^1.0.5": "1.0.6",
+    "jsr:@std/csv@^1.0.6": "1.0.6",
     "jsr:@std/internal@^1.0.6": "1.0.10",
     "jsr:@std/internal@^1.0.9": "1.0.10",
     "jsr:@std/io@0.225.2": "0.225.2",
     "jsr:@std/path@^1.1.1": "1.1.1",
+    "jsr:@std/streams@^1.0.9": "1.0.11",
     "npm:@modelcontextprotocol/inspector@*": "0.16.2",
     "npm:@modelcontextprotocol/inspector@0.16.2": "0.16.2",
     "npm:@modelcontextprotocol/sdk@1.17.1": "1.17.1_express@5.1.0_zod@3.25.76",
@@ -30,6 +32,12 @@
     "@std/bytes@1.0.6": {
       "integrity": "f6ac6adbd8ccd99314045f5703e23af0a68d7f7e58364b47d2c7f408aeb5820a"
     },
+    "@std/csv@1.0.6": {
+      "integrity": "52ef0e62799a0028d278fa04762f17f9bd263fad9a8e7f98c14fbd371d62d9fd",
+      "dependencies": [
+        "jsr:@std/streams"
+      ]
+    },
     "@std/internal@1.0.6": {
       "integrity": "9533b128f230f73bd209408bb07a4b12f8d4255ab2a4d22a1fd6d87304aca9a4"
     },
@@ -47,6 +55,9 @@
       "dependencies": [
         "jsr:@std/internal@^1.0.9"
       ]
+    },
+    "@std/streams@1.0.11": {
+      "integrity": "db583d27e28d133f389f1eec318cffdf4998305e5134c1d4b1c56b361cee6018"
     }
   },
   "npm": {
@@ -1587,6 +1598,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@1",
+      "jsr:@std/csv@^1.0.6",
       "jsr:@std/io@0.225.2",
       "jsr:@std/path@^1.1.1",
       "npm:@modelcontextprotocol/inspector@0.16.2",
