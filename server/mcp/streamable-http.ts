@@ -2,7 +2,7 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import mcpServer from "./server.ts";
 import { toFetchResponse, toReqRes } from "fetch-to-node";
 import type { Context } from "hono";
-import { factory } from "@/server/app-factory.ts";
+import { factory } from "@/app-factory.ts";
 
 const app = factory.createApp();
 app.post("/", async (c: Context) => {

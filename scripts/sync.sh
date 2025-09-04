@@ -12,7 +12,7 @@ if [ "$MODE" == "--dev" ]; then
     --allow-run \
     --allow-env \
     --allow-net \
-    ./sync.ts
+    ./cli/sync.ts
 else
     APP_ENV="PROD" deno \
     --env-file \
@@ -23,5 +23,5 @@ else
     --allow-run \
     --allow-env \
     --allow-net \
-    ./sync.ts
+    ./cli/sync.ts
 fi

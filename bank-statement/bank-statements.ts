@@ -1,6 +1,6 @@
-import type { Statement, Transaction } from "./types.ts";
+import type { Statement, Transaction } from "@app/open-banking/types";
 import { readAll } from "@std/io/read-all";
-import { filePathRelativeToCacheDir } from "@/utils/cache.ts";
+import { filePathRelativeToCacheDir } from "@app/lib/workspace";
 
 export function fromTransactions(transactions: Transaction[]): Statement {
   const transactionsSorted = transactions

@@ -1,24 +1,11 @@
 import open from "open";
+import {
+  type InstitutionID,
+  institutions,
+} from "@app/open-banking/institutions";
 import { convertFetchResponse } from "@/utils/fetch.ts";
 import { APP_OPENBANKING_HOST, APP_OPENBANKING_PORT } from "@/config.ts";
 import { prepareQRCodeForURL, printQRCode } from "@/utils/qr-code.ts";
-
-const institutions = {
-  ["HSBC_HBUKGB4B"]: {
-    id: "HSBC_HBUKGB4B",
-    name: "HSBC Personal",
-  },
-  ["BARCLAYS_BUKBGB22"]: {
-    id: "BARCLAYS_BUKBGB22",
-    name: "Barclays Personal",
-  },
-  ["CHASE_CHASGB2L"]: {
-    id: "CHASE_CHASGB2L",
-    name: "Chase Bank",
-  },
-};
-
-export type InstitutionID = keyof (typeof institutions);
 
 export function createRequisitionsRequestAgent(token: { access: string }) {
   return {
@@ -34,7 +21,7 @@ export function createRequisitionsRequestAgent(token: { access: string }) {
         },
       ).then(convertFetchResponse).then((resp) => resp.accounts);
     },
-    getRequisition: (institutionId: keyof (typeof institutions)) => {
+    getRequisition: (institutionId: InstitutionID) => {
       const query = new URLSearchParams();
       query.set("limit", "128");
       query.set("offset", "0");

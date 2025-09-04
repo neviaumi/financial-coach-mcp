@@ -4,15 +4,9 @@ type Cache = {
     expireAt: number;
   };
 };
+import { filePathRelativeToCacheDir } from "@app/lib/workspace";
 import { readAll } from "@std/io/read-all";
 import { isPromise } from "node:util/types";
-
-import { join } from "@std/path";
-
-export function filePathRelativeToCacheDir(filePath: string) {
-  const cacheDir = join(import.meta.dirname!, "../", ".cache");
-  return join(cacheDir, filePath);
-}
 
 function removeExpiredCache(cache: Cache) {
   const result = Object.fromEntries(

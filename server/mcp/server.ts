@@ -1,5 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { getMonthlyStatement } from "@/open-banking/bank-statements.ts";
+import { getMonthlyStatement } from "@app/bank-statement";
 import * as z from "zod";
 
 const server = new McpServer({

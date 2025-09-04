@@ -5,11 +5,10 @@ import {
   initializeAccessToken,
 } from "@/open-banking/token.ts";
 import { initializeCache } from "@/utils/cache.ts";
-import {
-  createRequisitionsRequestAgent,
-  InstitutionID,
-} from "@/open-banking/requisitions.ts";
-import { Transaction } from "@/open-banking/types.ts";
+import { createRequisitionsRequestAgent } from "@/open-banking/requisitions.ts";
+import type { Transaction } from "@app/open-banking/types";
+import { type InstitutionID } from "@app/open-banking/institutions";
+
 import {
   createAccountsRequestAgent,
   getAccountNumber,
@@ -19,7 +18,7 @@ import {
 import {
   fromTransactions,
   saveTransactionsAsMonthlyStatement,
-} from "@/open-banking/bank-statements.ts";
+} from "@app/bank-statement";
 
 await using cache = await initializeCache();
 function withThirtyTwoDayCache(key: string) {

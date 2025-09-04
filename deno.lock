@@ -1596,18 +1596,47 @@
     }
   },
   "workspace": {
-    "dependencies": [
-      "jsr:@std/assert@1",
-      "jsr:@std/csv@^1.0.6",
-      "jsr:@std/io@0.225.2",
-      "jsr:@std/path@^1.1.1",
-      "npm:@modelcontextprotocol/inspector@0.16.2",
-      "npm:@modelcontextprotocol/sdk@1.17.1",
-      "npm:fetch-to-node@2.1.0",
-      "npm:hono@4.8.10",
-      "npm:open@10.1.2",
-      "npm:qrcode@1.5.4",
-      "npm:zod@3.25.76"
-    ]
+    "members": {
+      "bank-statement": {
+        "dependencies": [
+          "jsr:@std/assert@1",
+          "jsr:@std/io@0.225.2"
+        ]
+      },
+      "cli": {
+        "dependencies": [
+          "jsr:@std/assert@1",
+          "jsr:@std/io@0.225.2",
+          "npm:open@10.1.2",
+          "npm:qrcode@1.5.4"
+        ]
+      },
+      "lib": {
+        "dependencies": [
+          "jsr:@std/assert@1",
+          "jsr:@std/path@^1.1.1"
+        ]
+      },
+      "open-banking": {
+        "dependencies": [
+          "jsr:@std/assert@1",
+          "jsr:@std/csv@^1.0.6",
+          "jsr:@std/io@0.225.2",
+          "jsr:@std/path@^1.1.1",
+          "npm:open@10.1.2"
+        ]
+      },
+      "server": {
+        "dependencies": [
+          "jsr:@std/assert@1",
+          "jsr:@std/csv@^1.0.6",
+          "npm:@modelcontextprotocol/inspector@0.16.2",
+          "npm:@modelcontextprotocol/sdk@1.17.1",
+          "npm:fetch-to-node@2.1.0",
+          "npm:hono@4.8.10",
+          "npm:zod@3.25.76"
+        ]
+      }
+    }
   }
 }
