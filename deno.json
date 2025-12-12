@@ -1,9 +1,11 @@
 {
+  "nodeModulesDir": "auto",
   "workspace": [
     "./server",
     "./cli",
     "./open-banking",
     "./lib",
-    "./bank-statement"
+    "./bank-statement",
+    "./web-client"
   ]
 }
