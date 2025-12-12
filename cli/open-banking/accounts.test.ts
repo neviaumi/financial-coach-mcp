@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert";
 import { getAccountNumber } from "./accounts.ts";
-import type { Account } from "./types.ts";
+import type { Account } from "@app/open-banking/types";
 
 [
   ["CARD", {

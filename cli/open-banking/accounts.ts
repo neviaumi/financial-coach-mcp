@@ -1,5 +1,5 @@
 import { convertFetchResponse } from "@/utils/fetch.ts";
-import type { Account, Token, Transaction } from "./types.ts";
+import type { Account, Token, Transaction } from "@app/open-banking/types";
 
 export function getConfirmedTransactionDateRange(today: Temporal.PlainDate) {
   let startDate = today.subtract({ days: 8 }).with({ day: 1 });

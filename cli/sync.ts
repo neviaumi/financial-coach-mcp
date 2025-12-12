@@ -8,6 +8,10 @@ import { initializeCache } from "@/utils/cache.ts";
 import { createRequisitionsRequestAgent } from "@/open-banking/requisitions.ts";
 import type { Transaction } from "@app/open-banking/types";
 import { type InstitutionID } from "@app/open-banking/institutions";
+import {
+  createAgreementsRequestAgent,
+  isAgreementExpired,
+} from "@/open-banking/agreements.ts";
 
 import {
   createAccountsRequestAgent,
@@ -40,8 +44,9 @@ const { refresh } = await cache.withCache(
   },
 )(initializeAccessToken)();
 const accessToken: string = await getAccessToken(refresh);
+const today = Temporal.Now.plainDateISO();
 const { startDate, endDate } = getConfirmedTransactionDateRange(
-  Temporal.Now.plainDateISO(),
+  today,
 );
 const yearMonthCode = `${startDate.year}${startDate.monthCode}`;
 
@@ -52,8 +57,18 @@ async function getTansactions(institutionId: InstitutionID) {
   const accountsRequestAgent = createAccountsRequestAgent({
     access: accessToken,
   });
+  const agreementRequestAgent = createAgreementsRequestAgent({
+    access: accessToken,
+  });
   const requisition = await requisitionsRequestAgent.getRequisition(
     institutionId,
+  ).then((req) =>
+    agreementRequestAgent.getAgreement(req.agreement)
+      .then((agreement) => isAgreementExpired(agreement, today))
+      .then((agreementExpired) => {
+        if (agreementExpired) throw new Error("Argreement expired");
+        return req;
+      })
   ).catch(() =>
     requisitionsRequestAgent.authenticate(
       crypto.randomUUID(),

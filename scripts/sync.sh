@@ -7,6 +7,7 @@ MODE=${1:---dev}
 if [ "$MODE" == "--dev" ]; then
     APP_ENV="DEV" op run --env-file="./.env.dev" -- deno \
     --unstable-temporal \
+    --allow-sys \
     --allow-read \
     --allow-write \
     --allow-run \

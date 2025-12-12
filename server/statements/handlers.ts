@@ -1,6 +1,6 @@
 import type { Context } from "hono";
-import { factory } from "@/server/app-factory.ts";
-import { getMonthlyStatement } from "@/open-banking/bank-statements.ts";
+import { factory } from "@/app-factory.ts";
+import { getMonthlyStatement } from "@app/bank-statement";
 import { stringify } from "@std/csv";
 
 function extractYearMonthCodeFromPathParams(param: string): string {

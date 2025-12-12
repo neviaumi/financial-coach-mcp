@@ -3,11 +3,12 @@ import {
   type InstitutionID,
   institutions,
 } from "@app/open-banking/institutions";
+import { Token } from "@app/open-banking/types";
 import { convertFetchResponse } from "@/utils/fetch.ts";
 import { APP_OPENBANKING_HOST, APP_OPENBANKING_PORT } from "@/config.ts";
 import { prepareQRCodeForURL, printQRCode } from "@/utils/qr-code.ts";
 
-export function createRequisitionsRequestAgent(token: { access: string }) {
+export function createRequisitionsRequestAgent(token: Token) {
   return {
     getAccountsList: (requisitionId: string): Promise<string[]> => {
       return fetch(
@@ -50,6 +51,7 @@ export function createRequisitionsRequestAgent(token: { access: string }) {
         return {
           reference: resp.reference,
           requisitionId: resp.id,
+          agreement: resp.agreement,
         };
       });
     },
