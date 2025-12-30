@@ -1,11 +1,17 @@
 {
   "name": "@app/web-client",
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"]
+  },
   "exports": {},
   "imports": {
+    "@awesome.me/webawesome": "npm:@awesome.me/webawesome@^3.1.0",
+    "@wa/": "../node_modules/@awesome.me/webawesome/dist/",
     "@deno/vite-plugin": "npm:@deno/vite-plugin@1.0.5",
     "vite": "npm:vite@7.2.7",
     "lit": "npm:lit@3.3.1",
-    "@/": "./",
+    "@/": "./src/",
     "@public/": "./public/"
-  }
+  },
+  "exclude": [".vite/"]
 }

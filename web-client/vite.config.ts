@@ -9,6 +9,10 @@ export default defineConfig({
         find: "@public/",
         replacement: "/",
       },
+      {
+        find: "@wa/",
+        replacement: "@awesome.me/webawesome/dist/",
+      },
     ],
   },
 });
