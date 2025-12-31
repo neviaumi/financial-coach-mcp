@@ -1,6 +1,6 @@
 class FetchResponseError extends Error {
-  accessor response: Response;
-  accessor body: string | undefined;
+  response: Response;
+  body: string | undefined;
   constructor(
     message: string,
     resp: Response,

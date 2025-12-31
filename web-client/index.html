@@ -1,19 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>web-client</title>
-    <link rel="stylesheet" href="./src/index.css" />
-    <script type="module" src="/src/elements.ts"></script>
-  </head>
-  <body>
-    <my-page class="hello-world">
-      <header slot="header">Heading</header>
-      <my-body slot="main">
-        <h1 slot="title">Main Body Here</h1>
-      </my-body>
-    </my-page>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>web-client</title>
+        <link rel="stylesheet" href="./src/index.css" />
+        <script type="module" src="/src/elements.ts"></script>
+    </head>
+    <body>
+        <my-page class="hello-world">
+            <header slot="header">Heading</header>
+            <my-body slot="main" year-month-code="2025M11">
+                <h1 slot="title">Main Body Here</h1>
+            </my-body>
+        </my-page>
+    </body>
 </html>

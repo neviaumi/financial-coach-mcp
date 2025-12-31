@@ -5,11 +5,13 @@ import type { Statement } from "@app/open-banking/types";
 
 export function getMonthlyStatement(
   yearMonthCode: YearMonthCode,
+  options?: { signal?: AbortSignal },
 ): Promise<Statement> {
   return fetch(
     new URL(
       `/statements/${yearMonthCode}.json`,
       API_BASE_URL,
     ),
+    options,
   ).then(toJson<Statement>);
 }
