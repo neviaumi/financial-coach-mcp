@@ -1,4 +1,4 @@
-import { convertFetchResponse } from "@/utils/fetch.ts";
+import { toJson } from "@app/lib/fetch";
 import { Token } from "@app/open-banking/types";
 
 type Agreement = {
@@ -21,7 +21,7 @@ export function createAgreementsRequestAgent(token: Token) {
             "Authorization": `Bearer ${token.access}`,
           },
         },
-      ).then(convertFetchResponse);
+      ).then(toJson<Agreement>);
     },
   };
 }

@@ -1,4 +1,16 @@
 {
+  "test": {
+    "permissions": "default"
+  },
+  "permissions": {
+    "default": {
+      "net": true,
+      "env": true,
+      "read": true,
+      "write": true,
+      "sys": true
+    }
+  },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
     "@std/io": "jsr:@std/io@0.225.2",

@@ -1,6 +1,7 @@
 import type { Statement, Transaction } from "@app/open-banking/types";
 import { readAll } from "@std/io/read-all";
 import { filePathRelativeToCacheDir } from "@app/lib/workspace";
+import type { YearMonthCode } from "@/year-month-code.ts";
 
 export function fromTransactions(transactions: Transaction[]): Statement {
   const transactionsSorted = transactions
@@ -40,7 +41,7 @@ export function fromTransactions(transactions: Transaction[]): Statement {
 }
 
 export async function saveTransactionsAsMonthlyStatement(
-  yearMonthCode: string,
+  yearMonthCode: YearMonthCode,
   statement: Statement,
 ) {
   await Deno.mkdir(filePathRelativeToCacheDir("statements"), {
@@ -62,7 +63,9 @@ export async function saveTransactionsAsMonthlyStatement(
   });
 }
 
-export function getMonthlyStatement(yearMonthCode: string): Promise<Statement> {
+export function getMonthlyStatement(
+  yearMonthCode: YearMonthCode,
+): Promise<Statement> {
   return Deno.open(
     filePathRelativeToCacheDir(`statements/${yearMonthCode}.json`),
     {

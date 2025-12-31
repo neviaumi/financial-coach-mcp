@@ -1,4 +1,5 @@
 import { APP_ENABLED_REQUESITIONS } from "@/config.ts";
+import { toYearMonthCode } from "@app/bank-statement/year-month-code";
 import {
   Credentials,
   getAccessToken,
@@ -48,7 +49,7 @@ const today = Temporal.Now.plainDateISO();
 const { startDate, endDate } = getConfirmedTransactionDateRange(
   today,
 );
-const yearMonthCode = `${startDate.year}${startDate.monthCode}`;
+const yearMonthCode = toYearMonthCode(startDate);
 
 async function getTansactions(institutionId: InstitutionID) {
   const requisitionsRequestAgent = createRequisitionsRequestAgent({

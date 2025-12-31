@@ -1,4 +1,4 @@
-import { convertFetchResponse } from "@/utils/fetch.ts";
+import { toJson } from "@app/lib/fetch";
 import type { Account, Token, Transaction } from "@app/open-banking/types";
 
 export function getConfirmedTransactionDateRange(today: Temporal.PlainDate) {
@@ -39,7 +39,7 @@ export function createAccountsRequestAgent(token: Token) {
             "Authorization": `Bearer ${token.access}`,
           },
         },
-      ).then(convertFetchResponse);
+      ).then(toJson<Account>);
     },
 
     getAccountTransactions: (
@@ -66,7 +66,11 @@ export function createAccountsRequestAgent(token: Token) {
             "Authorization": `Bearer ${token.access}`,
           },
         },
-      ).then(convertFetchResponse);
+      ).then(
+        toJson<
+          { transactions: { booked: Transaction[]; "pending": Transaction[] } }
+        >,
+      );
     },
   };
 }

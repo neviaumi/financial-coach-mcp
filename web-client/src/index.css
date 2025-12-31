@@ -3,8 +3,8 @@
 @import "@wa/styles/native.css";
 
 my-page {
-    --wa-font-family-body: "Roboto Mono", monospace;
-    --wa-font-family-heading: "Roboto Mono", monospace;
-    --wa-font-family-code: "Google Sans Code", monospace;
-    --wa-font-family-longform: "Roboto Mono", monospace;
+  --wa-font-family-body: "Roboto Mono", monospace;
+  --wa-font-family-heading: "Roboto Mono", monospace;
+  --wa-font-family-code: "Google Sans Code", monospace;
+  --wa-font-family-longform: "Roboto Mono", monospace;
 }
