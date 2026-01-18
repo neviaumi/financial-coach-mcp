@@ -1,0 +1,91 @@
+{
+  "period": {
+    "start": "2026-01-01",
+    "end": "2026-01-31"
+  },
+  "balance": {
+    "opening": {
+      "amount": "1000.00",
+      "currency": "GBP"
+    },
+    "closing": {
+      "amount": "1850.00",
+      "currency": "GBP"
+    }
+  },
+  "transactions": [
+    {
+      "bookingDate": "2026-01-01",
+      "bookingDateTime": "2026-01-01T09:00:00Z",
+      "transactionAmount": {
+        "amount": "2000.00",
+        "currency": "GBP"
+      },
+      "creditorName": "Tech Corp",
+      "remittanceInformationUnstructured": "January Salary",
+      "internalTransactionId": "txn_2026_01_01",
+      "institution": {
+        "id": "Monzo_001",
+        "accountNumber": "12345678",
+        "accountType": "Personal",
+        "softCode": "04-00-04"
+      },
+      "to": "David"
+    },
+    {
+      "bookingDate": "2026-01-02",
+      "bookingDateTime": "2026-01-02T10:00:00Z",
+      "transactionAmount": {
+        "amount": "-1000.00",
+        "currency": "GBP"
+      },
+      "creditorName": "Landlord",
+      "remittanceInformationUnstructured": "Rent January",
+      "internalTransactionId": "txn_2026_01_02",
+      "institution": {
+        "id": "Monzo_001",
+        "accountNumber": "12345678",
+        "accountType": "Personal",
+        "softCode": "04-00-04"
+      },
+      "to": "Landlord"
+    },
+    {
+      "bookingDate": "2026-01-05",
+      "bookingDateTime": "2026-01-05T14:30:00Z",
+      "transactionAmount": {
+        "amount": "-50.00",
+        "currency": "GBP"
+      },
+      "creditorName": "Tesco",
+      "remittanceInformationUnstructured": "Groceries",
+      "merchantCategoryCode": "5411",
+      "internalTransactionId": "txn_2026_01_03",
+      "institution": {
+        "id": "Revolut_001",
+        "accountNumber": "87654321",
+        "accountType": "Current",
+        "softCode": "12-34-56"
+      },
+      "to": "Tesco"
+    },
+    {
+      "bookingDate": "2026-01-15",
+      "bookingDateTime": "2026-01-15T18:00:00Z",
+      "transactionAmount": {
+        "amount": "-100.00",
+        "currency": "GBP"
+      },
+      "creditorName": "Amazon",
+      "remittanceInformationUnstructured": "Books",
+      "internalTransactionId": "txn_2026_01_04",
+      "institution": {
+        "id": "Revolut_001",
+        "accountNumber": "87654321",
+        "accountType": "Current",
+        "softCode": "12-34-56"
+      },
+      "to": "Amazon"
+    }
+  ]
+}

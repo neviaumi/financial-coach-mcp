@@ -1,0 +1,73 @@
+{
+  "period": {
+    "start": "2026-02-01",
+    "end": "2026-02-28"
+  },
+  "balance": {
+    "opening": {
+      "amount": "1850.00",
+      "currency": "GBP"
+    },
+    "closing": {
+      "amount": "2700.00",
+      "currency": "GBP"
+    }
+  },
+  "transactions": [
+    {
+      "bookingDate": "2026-02-01",
+      "bookingDateTime": "2026-02-01T09:00:00Z",
+      "transactionAmount": {
+        "amount": "2000.00",
+        "currency": "GBP"
+      },
+      "creditorName": "Tech Corp",
+      "remittanceInformationUnstructured": "February Salary",
+      "internalTransactionId": "txn_2026_02_01",
+      "institution": {
+        "id": "Monzo_001",
+        "accountNumber": "12345678",
+        "accountType": "Personal",
+        "softCode": "04-00-04"
+      },
+      "to": "David"
+    },
+    {
+      "bookingDate": "2026-02-02",
+      "bookingDateTime": "2026-02-02T10:00:00Z",
+      "transactionAmount": {
+        "amount": "-1000.00",
+        "currency": "GBP"
+      },
+      "creditorName": "Landlord",
+      "remittanceInformationUnstructured": "Rent February",
+      "internalTransactionId": "txn_2026_02_02",
+      "institution": {
+        "id": "Monzo_001",
+        "accountNumber": "12345678",
+        "accountType": "Personal",
+        "softCode": "04-00-04"
+      },
+      "to": "Landlord"
+    },
+    {
+      "bookingDate": "2026-02-14",
+      "bookingDateTime": "2026-02-14T19:30:00Z",
+      "transactionAmount": {
+        "amount": "-150.00",
+        "currency": "GBP"
+      },
+      "creditorName": "Fancy Restaurant",
+      "remittanceInformationUnstructured": "Valentine's Dinner",
+      "merchantCategoryCode": "5812",
+      "internalTransactionId": "txn_2026_02_03",
+      "institution": {
+        "id": "Revolut_001",
+        "accountNumber": "87654321",
+        "accountType": "Current",
+        "softCode": "12-34-56"
+      },
+      "to": "Fancy Restaurant"
+    }
+  ]
+}

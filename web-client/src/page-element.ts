@@ -105,12 +105,6 @@ export class PageElement extends LitElement {
   @property({ attribute: "year-month-code" })
   accessor yearMonthCode!: string;
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.classList.add();
-    this.style.setProperty("--my-custom-property", "value");
-  }
-
   private _task = new Task(this, {
     task: ([yearMonthCode], { signal }) =>
       getMonthlyStatement(
