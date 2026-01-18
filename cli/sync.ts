@@ -17,12 +17,15 @@ import {
 import {
   createAccountsRequestAgent,
   getAccountNumber,
+  getAccountSortCode,
   getAccountType,
   getConfirmedTransactionDateRange,
+  isCreditCardAccount,
 } from "@/open-banking/accounts.ts";
 import {
   fromTransactions,
   saveTransactionsAsMonthlyStatement,
+  withPeriod,
 } from "@app/bank-statement";
 
 await using cache = await initializeCache();
@@ -87,22 +90,24 @@ async function getTansactions(institutionId: InstitutionID) {
         `${institutionId}_ACCOUNT_DETAIL_${accountId}`,
       )(accountsRequestAgent.getAccountDetail)(accountId);
 
-      const { transactions: { booked, _pending } } =
-        await withThirtyTwoDayCache(
-          `${institutionId}_ACCOUNT_TRANSACTIONS_${accountId}_${yearMonthCode}`,
-        )(
-          accountsRequestAgent.getAccountTransactions,
-        )(
-          accountId,
-          startDate,
-          endDate,
-        );
+      const { transactions: { booked } } = await withThirtyTwoDayCache(
+        `${institutionId}_ACCOUNT_TRANSACTIONS_${accountId}_${yearMonthCode}`,
+      )(
+        accountsRequestAgent.getAccountTransactions,
+      )(
+        accountId,
+        startDate,
+        endDate,
+      );
       yield booked.map((bookedT: Transaction) => ({
         ...bookedT,
         institution: {
           id: institutionId,
           accountNumber: getAccountNumber(accountDetail),
           accountType: getAccountType(accountDetail),
+          softCode: isCreditCardAccount(accountDetail)
+            ? undefined
+            : getAccountSortCode(accountDetail),
         },
       }));
     }
@@ -118,5 +123,8 @@ const transactions = (await Array.fromAsync((async function* () {
 })())).flat();
 await saveTransactionsAsMonthlyStatement(
   yearMonthCode,
-  fromTransactions(transactions),
+  withPeriod(fromTransactions(transactions), {
+    start: startDate.toString(),
+    end: endDate.toString(),
+  }),
 );

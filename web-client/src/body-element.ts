@@ -1,59 +1,145 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { Task } from "@lit/task";
-import prefixedElement from "@/prefixed-element.ts";
-import { getMonthlyStatement } from "@/async.ts";
-import { toYearMonthCode } from "@app/bank-statement/year-month-code";
-import "@wa/components/button/button.js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement } from "lit/decorators.js";
+import { statement } from "@/signals.ts";
+import { prefixedElementName } from "@/prefixed-element-name.ts";
+import { createColumnHelper, getValueFromInfo } from "@/data-table.ts";
+import type { Statement } from "@app/open-banking/types";
+import { parseMccCodeToLabel } from "@app/open-banking/mcc";
+import { withWAStyles } from "@/wa-styles.ts";
 
-const elementName = prefixedElement<"body">("body");
+import "@wa/components/format-date/format-date.js";
+import "@wa/components/format-number/format-number.js";
 
-/**
- * The body element for the web page.
- *
- * @slot - The main content of the body
- */
+const elementName = prefixedElementName<"body">("body");
+type StatementTransaction = Statement["transactions"][number];
+const columnHelper = createColumnHelper<StatementTransaction>();
+const columns = [
+  columnHelper.accessor("bookingDate", {
+    id: "bookingDate",
+    header: "Date",
+    cell: (info) => {
+      const bookingDate = info.getValue();
+      return html`
+        <wa-format-date
+          style="text-wrap-mode: nowrap;"
+          .date="${bookingDate}"
+          lang="en-GB"
+          day="2-digit"
+          month="short"
+          year="numeric"
+        ></wa-format-date>
+      `;
+    },
+  }),
+  columnHelper.accessor((row) => row.institution.id.split("_")[0], {
+    id: "institution",
+    header: "Institution",
+    cell: getValueFromInfo,
+  }),
+  columnHelper.accessor(
+    (row) =>
+      [
+        row.institution.accountType,
+        `${row.institution.softCode ?? ""} ${row.institution.accountNumber}`
+          .trim(),
+      ].join("_"),
+    {
+      id: "account",
+      header: "Account",
+      cell: (info) => {
+        const [accountType, accountNumber] = info.getValue().split("_");
+        return html`
+          <div part="account-type">${accountType}</div>
+          <span part="account-number">${accountNumber}</span>
+        `;
+      },
+    },
+  ),
+  columnHelper.accessor(
+    (row) =>
+      row.merchantCategoryCode
+        ? [row.to, row.merchantCategoryCode].join("_")
+        : row.to,
+    {
+      id: "transactionDetails",
+      header: "Transaction details",
+      cell: (info) => {
+        const [to, mccCode] = info.getValue().split("_");
+        if (!mccCode) return to;
+        return html`
+          ${parseMccCodeToLabel(mccCode)}<br />${to}
+        `;
+      },
+    },
+  ),
+  columnHelper.accessor(
+    "transactionAmount",
+    {
+      id: "Amount",
+      header: "Amount",
+      cell: (info) => {
+        const amount = info.getValue();
+        const amountValue = parseFloat(amount.amount);
+        const isPossitiveAmount = amountValue >= 0;
+        return html`
+          <my-two-columns part="amount ${isPossitiveAmount
+            ? "amount-income"
+            : "amount-payout"}">
+            ${isPossitiveAmount ? "+" : "-"}<wa-format-number
+              type="currency"
+              currency="${amount.currency}"
+              value="${Math.abs(amountValue)}"
+              lang="en-GB"
+            ></wa-format-number></my-two-columns>
+        `;
+      },
+    },
+  ),
+];
+
 @customElement(elementName)
 export class BodyElement extends LitElement {
-  @property({ attribute: "year-month-code" })
-  accessor yearMonthCode!: string;
+  static override styles = withWAStyles(css`
+    :host {
+      --payout-color: var(--wa-color-brand-fill-loud);
+      --income-color: var(--wa-color-brand-fill-normal);
+    }
+    my-data-table::part(amount) {
+      gap: 0;
+    }
+    my-data-table::part(account-number) {
+      text-wrap-mode: nowrap;
+      font-weight: var(--wa-font-weight-heading);
+    }
 
-  private _task = new Task(this, {
-    task: ([yearMonthCode], { signal }) =>
-      getMonthlyStatement(
-        toYearMonthCode(yearMonthCode),
-        { signal },
-      ),
-    args: () => [this.yearMonthCode],
-  });
-
+    my-data-table::part(amount-payout) {
+      font-weight: var(--wa-font-weight-heading);
+      color: var(--payout-color);
+    }
+    my-data-table::part(amount-income) {
+      font-weight: var(--wa-font-weight-heading);
+      color: var(--income-color);
+    }
+  `);
   override render() {
+    const transactions = statement.get()?.transactions;
+    if (!transactions) return nothing;
     return html`
-      <div>
-        <slot name="title"></slot>
-        <wa-button variant="brand">WA Button</wa-button>
-        ${this._task.render({
-          pending: () =>
-            html`
-
-            `,
-          complete: (result) => {
-            if (result === null) {
-              return html`
-
-              `;
-            }
-            return html`
-              <pre>${JSON.stringify(result, null, 2)}</pre>
-            `;
-          },
-          error: (e) =>
-            html`
-              <div role="alert">${(e as Error).message}</div>
-            `,
-        })}
-      </div>
+      <my-data-table
+        .calculateRowTitle="${this.calculateRowTitle}"
+        .data="${transactions}"
+        .columns="${columns}"
+      ></my-data-table>
     `;
+  }
+  private calculateRowTitle(row: StatementTransaction): String {
+    return [
+      row.institution.id,
+      row.institution.accountType,
+      row.institution.accountNumber,
+      "to",
+      row.to,
+    ].join("_");
   }
 }
 

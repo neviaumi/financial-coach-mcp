@@ -23,6 +23,7 @@ export type Institution = {
   id: string;
   accountNumber: string;
   accountType: string;
+  softCode?: string;
 };
 
 export type Transaction = {
@@ -39,6 +40,10 @@ export type Transaction = {
 };
 
 export type Statement = {
+  period: {
+    start: string;
+    end: string;
+  };
   balance: {
     opening: Amount;
     closing: Amount;

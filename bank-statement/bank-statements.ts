@@ -3,7 +3,18 @@ import { readAll } from "@std/io/read-all";
 import { filePathRelativeToCacheDir } from "@app/lib/workspace";
 import type { YearMonthCode } from "@/year-month-code.ts";
 
-export function fromTransactions(transactions: Transaction[]): Statement {
+export function withPeriod(
+  statement: Omit<Statement, "period">,
+  period: Statement["period"],
+): Statement {
+  return Object.assign(statement, {
+    period,
+  });
+}
+
+export function fromTransactions(
+  transactions: Transaction[],
+): Omit<Statement, "period"> {
   const transactionsSorted = transactions
     .map((transaction) => {
       const to = (() => {
@@ -17,8 +28,8 @@ export function fromTransactions(transactions: Transaction[]): Statement {
       });
     })
     .toSorted((a, b) =>
-      new Date(a.bookingDateTime).getTime() -
-      new Date(b.bookingDateTime).getTime()
+      new Date(a.valueDateTime ?? a.bookingDateTime).getTime() -
+      new Date(b.valueDateTime ?? b.bookingDateTime).getTime()
     );
   const sum = transactionsSorted.reduce(
     (acc, transaction) =>

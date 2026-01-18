@@ -2,7 +2,8 @@
   "name": "@app/open-banking",
   "exports": {
     "./types": "./types.ts",
-    "./institutions": "./institutions.ts"
+    "./institutions": "./institutions.ts",
+    "./mcc": "./mcc.ts"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",

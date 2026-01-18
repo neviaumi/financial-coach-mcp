@@ -13,18 +13,38 @@ export function getConfirmedTransactionDateRange(today: Temporal.PlainDate) {
   return { startDate, endDate };
 }
 
+export function isCreditCardAccount(account: Account): boolean {
+  return account.cashAccountType === "CARD";
+}
+
+export function getAccountSortCode(account: Account): string {
+  if (isCreditCardAccount(account)) {
+    throw new Error("Credit card account do not have a sort code");
+  }
+  return Array.from(
+    { length: 3 },
+    (_, i) => account.scan!.slice(i * 2, (i * 2) + 2),
+  ).join("-");
+}
+
 export function getAccountNumber(account: Account): string {
-  if (account.cashAccountType === "CARD") {
+  if (isCreditCardAccount(account)) {
     return account.maskedPan!;
   }
   return account.scan!.slice(6);
 }
 
 export function getAccountType(account: Account) {
-  if (account.cashAccountType === "CARD") {
+  if (isCreditCardAccount(account)) {
     return "CreditCard" as const;
   }
-  return "Saving" as const;
+  if (account.cashAccountType === "CACC") {
+    return "Current" as const;
+  }
+  if (account.cashAccountType === "SVGS") {
+    return "Saving" as const;
+  }
+  return "Generic" as const;
 }
 
 export function createAccountsRequestAgent(token: Token) {
