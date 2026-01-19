@@ -16,49 +16,45 @@ const elementNameStatementBalance = prefixedElementName<"statement-balance">("st
 @customElement(elementNameStatementBalance)
 export class StatementBalanceElement extends SignalWatcher(LitElement) {
   static override styles = withWAStyles(css`
-    wa-divider {
-      --color: var(--wa-color-border-quiet);
-    }
     my-two-columns {
         --content-percentage: var(--my-size-15);
     }
-    :host::part(positive) {
-        font-weight: var(--wa-font-weight-bold);
-        color: var(--wa-color-brand-fill-normal);
+    .no-wrap {
+        text-wrap-mode: nowrap;
     }
-    :host::part(negative) {
+    :host::part(balance) {
+        font-size: var(--wa-font-size-m);
         font-weight: var(--wa-font-weight-bold);
-        color: var(--wa-color-brand-fill-loud);
-
     }
     `);
 
   override render() {
     const statementValue = statement.get();
     if (!statementValue) return;
-    const { opening, closing } = statementValue.balance;
+    const { amount, referenceDate } = statementValue.balance;
     return html`
       <my-two-columns>
-          <label>Opening balance:</label>
-          <wa-format-number
-            type="currency"
-            currency="${opening.currency}"
-            value="${opening.amount}"
-            lang="en-GB"
-          ></wa-format-number>
-      </my-two-columns>
-      <wa-divider></wa-divider>
-      <my-two-columns>
-          <label>Closing balance:</label>
-          <wa-format-number
-              part=${`balance-closing ${parseFloat(closing.amount) >  parseFloat(opening.amount) ? "positive" : "negative"}`}
-            type="currency"
-            currency="${closing.currency}"
-            value="${closing.amount}"
-            lang="en-GB"
-          ></wa-format-number>
-      </my-two-columns>
+          <label>Bank balance:</label>
+          <div>
+              <span class='no-wrap'>
+              As of <wa-format-date
+                  part='month-year'
+                lang="en-GB"
+                date="${referenceDate}"
+                day="2-digit"
+                month="short"
+                year="numeric"
+              ></wa-format-date>:</span><br/>
+              <wa-format-number
+                  part='balance'
+                type="currency"
+                currency="${amount.currency}"
+                value="${amount.amount}"
+                lang="en-GB"
+              ></wa-format-number>
+          </div>
 
+      </my-two-columns>
     `;
   }
 }

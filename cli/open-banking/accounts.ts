@@ -1,5 +1,11 @@
 import { toJson } from "@app/lib/fetch";
-import type { Account, Token, Transaction } from "@app/open-banking/types";
+import type {
+  Account,
+  Amount,
+  Balance,
+  Token,
+  Transaction,
+} from "@app/open-banking/types";
 
 export function getConfirmedTransactionDateRange(today: Temporal.PlainDate) {
   let startDate = today.subtract({ days: 8 }).with({ day: 1 });
@@ -47,8 +53,43 @@ export function getAccountType(account: Account) {
   return "Generic" as const;
 }
 
+export function findBalance(
+  account: Account,
+  balances: Balance[],
+): Amount | undefined {
+  let balance = null;
+  if (isCreditCardAccount(account)) {
+    balance = balances.find((balance) =>
+      balance.balanceType === "interimBooked"
+    );
+  } else {
+    balance = balances.find((balance) => balance.balanceType === "expected");
+  }
+  if (balance) return balance.balanceAmount;
+  console.log(
+    `No current balance find on ${getAccountNumber(account)}`,
+    balances,
+  );
+  return undefined;
+}
+
 export function createAccountsRequestAgent(token: Token) {
   return {
+    getAccountBalances: (
+      accountId: string,
+    ): Promise<{ balances: Balance[] }> => {
+      return fetch(
+        `https://bankaccountdata.gocardless.com/api/v2/accounts/${accountId}/balances/`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token.access}`,
+          },
+        },
+      ).then(toJson<{ balances: Balance[] }>);
+    },
+
     getAccountDetail: (accountId: string): Promise<Account> => {
       return fetch(
         `https://bankaccountdata.gocardless.com/api/v2/accounts/${accountId}/details`,

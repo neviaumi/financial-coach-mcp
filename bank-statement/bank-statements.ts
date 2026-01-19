@@ -3,18 +3,33 @@ import { readAll } from "@std/io/read-all";
 import { filePathRelativeToCacheDir } from "@app/lib/workspace";
 import type { YearMonthCode } from "@/year-month-code.ts";
 
+type BaseStatement = Omit<Statement, "period" | "balance">;
+
 export function withPeriod(
-  statement: Omit<Statement, "period">,
+  statement: BaseStatement,
   period: Statement["period"],
-): Statement {
+): BaseStatement & { period: Statement["period"] } {
   return Object.assign(statement, {
     period,
   });
 }
 
+export function withBalance(
+  statement: BaseStatement,
+  balance: Statement["balance"],
+): BaseStatement & { balance: Statement["balance"] } {
+  return Object.assign(statement, {
+    balance,
+  });
+}
+
+export function asStatement(statement: BaseStatement): Statement {
+  return statement as Statement;
+}
+
 export function fromTransactions(
   transactions: Transaction[],
-): Omit<Statement, "period"> {
+): Omit<Statement, "period" | "balance"> {
   const transactionsSorted = transactions
     .map((transaction) => {
       const to = (() => {
@@ -31,22 +46,7 @@ export function fromTransactions(
       new Date(a.valueDateTime ?? a.bookingDateTime).getTime() -
       new Date(b.valueDateTime ?? b.bookingDateTime).getTime()
     );
-  const sum = transactionsSorted.reduce(
-    (acc, transaction) =>
-      acc + (parseFloat(transaction.transactionAmount.amount) * 100),
-    0.0,
-  ) / 100;
   return {
-    balance: {
-      opening: {
-        amount: "0",
-        currency: "GBP",
-      },
-      closing: {
-        amount: sum.toFixed(2),
-        currency: "GBP",
-      },
-    },
     transactions: transactionsSorted,
   };
 }

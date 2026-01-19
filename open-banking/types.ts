@@ -19,6 +19,12 @@ export type Amount = {
   currency: string;
 };
 
+export type Balance = {
+  balanceAmount: Amount;
+  balanceType: string;
+  referenceDate: string;
+};
+
 export type Institution = {
   id: string;
   accountNumber: string;
@@ -45,8 +51,8 @@ export type Statement = {
     end: string;
   };
   balance: {
-    opening: Amount;
-    closing: Amount;
+    referenceDate: string;
+    amount: Amount;
   };
   transactions: Array<
     Transaction & {

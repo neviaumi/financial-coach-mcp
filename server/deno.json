@@ -1,4 +1,13 @@
 {
+  "test": {
+    "permissions": "default"
+  },
+  "permissions": {
+    "default": {
+      "env": true,
+      "read": true
+    }
+  },
   "imports": {
     "@modelcontextprotocol/inspector": "npm:@modelcontextprotocol/inspector@0.18.0",
     "@modelcontextprotocol/sdk": "npm:@modelcontextprotocol/sdk@1.25.1",
