@@ -26,7 +26,7 @@ export class InvalidYearMonthCodeError extends Error {
 }
 
 export function toYearMonthCode(
-  date: Temporal.PlainDate | string,
+  date: Temporal.PlainDate | string | undefined,
 ): YearMonthCode {
   if (!date) throw new InvalidYearMonthCodeError(`yearMonthCode is empty`);
   const yearMonthCode: string = typeof date === "string"

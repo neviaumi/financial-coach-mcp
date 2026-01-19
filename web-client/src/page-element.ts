@@ -1,5 +1,5 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement } from "lit/decorators.js";
 import { prefixedElementName } from "@/prefixed-element-name.ts";
 import { getMonthlyStatement } from "@/async.ts";
 import { toYearMonthCode } from "@app/bank-statement/year-month-code";
@@ -102,19 +102,19 @@ export class PageElement extends LitElement {
     `,
   ]);
 
-  @property({ attribute: "year-month-code" })
-  accessor yearMonthCode!: string;
-
   private _task = new Task(this, {
-    task: ([yearMonthCode], { signal }) =>
-      getMonthlyStatement(
-        toYearMonthCode(yearMonthCode),
+    task: async (_, { signal }) => {
+      const path = globalThis.location.pathname;
+      const segments = path.split("/").filter(Boolean);
+      return await getMonthlyStatement(
+        toYearMonthCode(segments.pop()),
         { signal },
       ).then((statementResp) => {
         statement.set(statementResp);
         return statementResp;
-      }),
-    args: () => [this.yearMonthCode],
+      });
+    },
+    args: () => [],
   });
 
   override render() {
