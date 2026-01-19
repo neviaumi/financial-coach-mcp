@@ -20,7 +20,7 @@ export type ColumnDef<T> = _ColumnDef<T>;
 export class DataTableElement<TData> extends LitElement {
   static override styles = withWAStyles(css`
     tbody tr td {
-        align-content: center;
+      align-content: center;
     }
   `);
 
@@ -46,7 +46,7 @@ export class DataTableElement<TData> extends LitElement {
               <tr>
                 ${headerGroup.headers.map((header) =>
                   html`
-                    <th>
+                    <th part="header cell">
                       ${header.isPlaceholder ? nothing : flexRender(
                         header.column.columnDef.header,
                         header.getContext(),
@@ -65,7 +65,7 @@ export class DataTableElement<TData> extends LitElement {
               <tr title="${rowTitle}" aria-label="${rowTitle}">
                 ${row.getVisibleCells().map((cell) =>
                   html`
-                    <td>
+                    <td part="cell">
                       ${flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),

@@ -16,15 +16,18 @@ const elementNameStatementBalance = prefixedElementName<"statement-balance">("st
 @customElement(elementNameStatementBalance)
 export class StatementBalanceElement extends SignalWatcher(LitElement) {
   static override styles = withWAStyles(css`
+    wa-divider {
+      --color: var(--wa-color-border-quiet);
+    }
     my-two-columns {
         --content-percentage: var(--my-size-15);
     }
     :host::part(positive) {
-        font-weight: var(--wa-font-weight-heading);
+        font-weight: var(--wa-font-weight-bold);
         color: var(--wa-color-brand-fill-normal);
     }
     :host::part(negative) {
-        font-weight: var(--wa-font-weight-heading);
+        font-weight: var(--wa-font-weight-bold);
         color: var(--wa-color-brand-fill-loud);
 
     }
@@ -44,6 +47,7 @@ export class StatementBalanceElement extends SignalWatcher(LitElement) {
             lang="en-GB"
           ></wa-format-number>
       </my-two-columns>
+      <wa-divider></wa-divider>
       <my-two-columns>
           <label>Closing balance:</label>
           <wa-format-number
@@ -113,8 +117,33 @@ export class InstitutionListElement extends SignalWatcher(LitElement) {
       li {
           list-style-type: none;
       }
-      wa-tag {
-          margin-bottom: var(--my-size-4)
+      h2 {
+          font-size: var(--wa-font-size-xl);
+          margin-bottom: var(--wa-space-s);
+      }
+      .my-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: var(--wa-space-2xs);
+      }
+      :host::part(bank-account-listing) {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: var(--wa-space-xs)
+      }
+      :host::part(account) {
+          margin: var(--my-size-0);
+          margin-bottom: var(--wa-space-2xs);
+      }
+      :host::part(account-type) {
+          font-size: var(--wa-font-size-2xs);
+          font-weight: var(--wa-font-weight-light);
+          color: var(--wa-color-text-quiet);
+      }
+      :host::part(account-number) {
+          font-size: var(--wa-font-size-m);
+          font-weight: var(--wa-font-weight-bold);
       }
       `);
 
@@ -123,16 +152,16 @@ export class InstitutionListElement extends SignalWatcher(LitElement) {
     if (!statementValue) return;
     const institutions = getInstitutions(statementValue.transactions);
     return html`
-      <h2>Data source</h2>
-      <div>
+      <h2>Institutions</h2>
+      <div class='my-grid'>
         ${repeat(
           institutions,
           ([institutionId]) => institutionId,
           ([institutionId, accounts]) =>
             html`
-              <section>
+              <section title="${institutionId}" part='bank-account-listing'>
                 <wa-tag>${institutionId}</wa-tag>
-                <ul title="${institutionId}">
+                <ul>
                   ${repeat(
                     accounts,
                     (account) => account.accountNumber,
@@ -141,7 +170,10 @@ export class InstitutionListElement extends SignalWatcher(LitElement) {
                           account.softCode ?? ""
                         } ${account.accountNumber}`.trim();
                         return html`
-                          <li>${account.accountType} ${accountNumber}</li>
+                          <li part='account'>
+                              <span part='account-type'>${account.accountType}</span><br/>
+                              <span part='account-number'>${accountNumber}</span>
+                          </li>
                         `
                     }
                   )}
@@ -159,6 +191,9 @@ const elementName = prefixedElementName<"header">("header");
 export class HeaderElement extends LitElement {
   static override styles = withWAStyles(
     css`
+      :host {
+          break-inside: avoid;
+      }
       wa-avatar {
         --size: var(--my-size-20);
       }
@@ -192,6 +227,7 @@ export class HeaderElement extends LitElement {
           <my-institution-list></my-institution-list>
           <div class='row2-right'>
               <my-statement-date-range></my-statement-date-range>
+              <wa-divider></wa-divider>
               <my-statement-balance></my-statement-balance>
           </div>
 

@@ -65,9 +65,17 @@ const columns = [
       header: "Transaction details",
       cell: (info) => {
         const [to, mccCode] = info.getValue().split("_");
-        if (!mccCode) return to;
+        if (!mccCode) {
+          return html`
+            <span part="transaction-receiver">${to}</span>
+          `;
+        }
         return html`
-          ${parseMccCodeToLabel(mccCode)}<br />${to}
+          <span part="transaction-category">${parseMccCodeToLabel(
+            mccCode,
+          )}</span>
+          <br />
+          <span part="transaction-receiver">${to}</span>
         `;
       },
     },
@@ -104,21 +112,38 @@ export class BodyElement extends LitElement {
       --payout-color: var(--wa-color-brand-fill-loud);
       --income-color: var(--wa-color-brand-fill-normal);
     }
+    my-data-table::part(cell) {
+      font-size: var(--wa-font-size-m);
+    }
     my-data-table::part(amount) {
       gap: 0;
     }
+    my-data-table::part(account-type) {
+      font-size: var(--wa-font-size-2xs);
+      font-weight: var(--wa-font-weight-light);
+      color: var(--wa-color-text-quiet);
+    }
     my-data-table::part(account-number) {
       text-wrap-mode: nowrap;
-      font-weight: var(--wa-font-weight-heading);
+      font-weight: var(--wa-font-weight-bold);
     }
 
     my-data-table::part(amount-payout) {
-      font-weight: var(--wa-font-weight-heading);
+      font-weight: var(--wa-font-weight-bold);
       color: var(--payout-color);
     }
     my-data-table::part(amount-income) {
-      font-weight: var(--wa-font-weight-heading);
+      font-weight: var(--wa-font-weight-bold);
       color: var(--income-color);
+    }
+    my-data-table::part(transaction-category) {
+      font-size: var(--wa-font-size-2xs);
+      font-weight: var(--wa-font-weight-light);
+      color: var(--wa-color-text-quiet);
+    }
+    my-data-table::part(transaction-receiver) {
+      font-size: var(--wa-font-size-m);
+      font-weight: var(--wa-font-weight-semibold);
     }
   `);
   override render() {
@@ -132,7 +157,7 @@ export class BodyElement extends LitElement {
       ></my-data-table>
     `;
   }
-  private calculateRowTitle(row: StatementTransaction): String {
+  private calculateRowTitle(row: StatementTransaction): string {
     return [
       row.institution.id,
       row.institution.accountType,
