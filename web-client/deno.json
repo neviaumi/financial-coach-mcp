@@ -1,17 +1,29 @@
 {
   "name": "@app/web-client",
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"]
+    "lib": ["dom", "dom.iterable", "esnext", "deno.ns", "deno.unstable"]
+  },
+  "test": {
+    "permissions": "default"
+  },
+  "permissions": {
+    "default": {
+      "net": true
+    }
   },
   "exports": {},
   "imports": {
-    "@awesome.me/webawesome": "npm:@awesome.me/webawesome@^3.1.0",
+    "@awesome.me/webawesome": "npm:@awesome.me/webawesome@3.1.0",
+    "@lit-labs/signals": "npm:@lit-labs/signals@0.2.0",
+    "@lit/task": "npm:@lit/task@1.0.3",
+    "@std/assert": "jsr:@std/assert@1.0.16",
+    "@tanstack/lit-table": "npm:@tanstack/lit-table@^8.21.3",
     "@wa/": "../node_modules/@awesome.me/webawesome/dist/",
-    "@deno/vite-plugin": "npm:@deno/vite-plugin@1.0.5",
+    "@deno/vite-plugin": "npm:@deno/vite-plugin@1.0.6",
     "vite": "npm:vite@7.2.7",
-    "lit": "npm:lit@3.3.1",
+    "lit": "npm:lit@3.3.2",
     "@/": "./src/",
     "@public/": "./public/"
   },
-  "exclude": [".vite/"]
+  "exclude": [".vite/", "public/"]
 }

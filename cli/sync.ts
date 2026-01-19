@@ -1,4 +1,5 @@
 import { APP_ENABLED_REQUESITIONS } from "@/config.ts";
+import { toYearMonthCode } from "@app/bank-statement/year-month-code";
 import {
   Credentials,
   getAccessToken,
@@ -15,13 +16,19 @@ import {
 
 import {
   createAccountsRequestAgent,
+  findBalance,
   getAccountNumber,
+  getAccountSortCode,
   getAccountType,
   getConfirmedTransactionDateRange,
+  isCreditCardAccount,
 } from "@/open-banking/accounts.ts";
 import {
+  asStatement,
   fromTransactions,
   saveTransactionsAsMonthlyStatement,
+  withBalance,
+  withPeriod,
 } from "@app/bank-statement";
 
 await using cache = await initializeCache();
@@ -48,13 +55,10 @@ const today = Temporal.Now.plainDateISO();
 const { startDate, endDate } = getConfirmedTransactionDateRange(
   today,
 );
-const yearMonthCode = `${startDate.year}${startDate.monthCode}`;
+const yearMonthCode = toYearMonthCode(startDate);
 
-async function getTansactions(institutionId: InstitutionID) {
+async function getInstitutionAccounts(institutionId: InstitutionID) {
   const requisitionsRequestAgent = createRequisitionsRequestAgent({
-    access: accessToken,
-  });
-  const accountsRequestAgent = createAccountsRequestAgent({
     access: accessToken,
   });
   const agreementRequestAgent = createAgreementsRequestAgent({
@@ -75,47 +79,124 @@ async function getTansactions(institutionId: InstitutionID) {
       institutionId,
     )
   );
-  const accounts = await withThirtyTwoDayCache(`${institutionId}_ACCOUNTS`)(
+  return withThirtyTwoDayCache(`${institutionId}_ACCOUNTS`)(
     requisitionsRequestAgent.getAccountsList,
   )(
     requisition.requisitionId,
   );
+}
+
+async function getAccountTransactions(
+  institutionId: string,
+  accountId: string,
+) {
+  const accountsRequestAgent = createAccountsRequestAgent({
+    access: accessToken,
+  });
+  const { account: accountDetail } = await withThirtyTwoDayCache(
+    `${institutionId}_ACCOUNT_DETAIL_${accountId}`,
+  )(accountsRequestAgent.getAccountDetail)(accountId);
+
+  const { transactions: { booked } } = await withThirtyTwoDayCache(
+    `${institutionId}_ACCOUNT_TRANSACTIONS_${accountId}_${yearMonthCode}`,
+  )(
+    accountsRequestAgent.getAccountTransactions,
+  )(
+    accountId,
+    startDate,
+    endDate,
+  );
+  return booked.map((bookedT: Transaction) => ({
+    ...bookedT,
+    institution: {
+      id: institutionId,
+      accountNumber: getAccountNumber(accountDetail),
+      accountType: getAccountType(accountDetail),
+      softCode: isCreditCardAccount(accountDetail)
+        ? undefined
+        : getAccountSortCode(accountDetail),
+    },
+  }));
+}
+
+async function getTansactions(institutionId: InstitutionID) {
+  const accounts = await getInstitutionAccounts(institutionId);
   return (await Array.fromAsync((async function* (accountIds: string[]) {
     for (const accountId of accountIds) {
-      const { account: accountDetail } = await withThirtyTwoDayCache(
-        `${institutionId}_ACCOUNT_DETAIL_${accountId}`,
-      )(accountsRequestAgent.getAccountDetail)(accountId);
-
-      const { transactions: { booked, _pending } } =
-        await withThirtyTwoDayCache(
-          `${institutionId}_ACCOUNT_TRANSACTIONS_${accountId}_${yearMonthCode}`,
-        )(
-          accountsRequestAgent.getAccountTransactions,
-        )(
-          accountId,
-          startDate,
-          endDate,
-        );
-      yield booked.map((bookedT: Transaction) => ({
-        ...bookedT,
-        institution: {
-          id: institutionId,
-          accountNumber: getAccountNumber(accountDetail),
-          accountType: getAccountType(accountDetail),
-        },
-      }));
+      yield getAccountTransactions(institutionId, accountId);
     }
   })(
     accounts,
   ))).flat();
 }
 
-const transactions = (await Array.fromAsync((async function* () {
+async function getAccountBalances(
+  institutionId: string,
+  accountId: string,
+) {
+  const accountsRequestAgent = createAccountsRequestAgent({
+    access: accessToken,
+  });
+  const { account: accountDetail } = await withThirtyTwoDayCache(
+    `${institutionId}_ACCOUNT_DETAIL_${accountId}`,
+  )(accountsRequestAgent.getAccountDetail)(accountId);
+  const { balances: accountBalances } = await withThirtyTwoDayCache(
+    `${institutionId}_ACCOUNT_BALANCES_${accountId}_${yearMonthCode}`,
+  )(
+    accountsRequestAgent.getAccountBalances,
+  )(
+    accountId,
+  );
+  return findBalance(accountDetail, accountBalances);
+}
+
+async function getBalances(institutionId: InstitutionID) {
+  const accounts = await getInstitutionAccounts(institutionId);
+  const balances = await Array.fromAsync(
+    (async function* (accountIds: string[]) {
+      for (const accountId of accountIds) {
+        yield getAccountBalances(institutionId, accountId);
+      }
+    })(
+      accounts,
+    ),
+  );
+  return balances.filter(Boolean).reduce(
+    (prev, amount) => prev + parseFloat(amount!.amount),
+    0,
+  );
+}
+
+const requestionData = await Array.fromAsync((async function* () {
   for (const ENABLED_REQUESTION of APP_ENABLED_REQUESITIONS) {
-    yield getTansactions(ENABLED_REQUESTION);
+    const balance = await getBalances(ENABLED_REQUESTION);
+    const transactions = await getTansactions(ENABLED_REQUESTION);
+    yield {
+      balance,
+      transactions,
+    };
   }
-})())).flat();
+})());
+const balance = requestionData.reduce((sum, data) => sum + data.balance, 0);
+const transactions = requestionData.map((data) => data.transactions).flat();
+
 await saveTransactionsAsMonthlyStatement(
   yearMonthCode,
-  fromTransactions(transactions),
+  asStatement(withBalance(
+    withPeriod(fromTransactions(transactions), {
+      start: startDate.toString(),
+      end: endDate.toString(),
+    }),
+    {
+      amount: {
+        amount: new Intl.NumberFormat("en-GB", {
+          useGrouping: false,
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(balance),
+        currency: "GBP",
+      },
+      referenceDate: today.toString(),
+    },
+  )),
 );

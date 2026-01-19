@@ -1,10 +1,10 @@
 import open from "open";
+import { toJson } from "@app/lib/fetch";
 import {
   type InstitutionID,
   institutions,
 } from "@app/open-banking/institutions";
 import { Token } from "@app/open-banking/types";
-import { convertFetchResponse } from "@/utils/fetch.ts";
 import { APP_OPENBANKING_HOST, APP_OPENBANKING_PORT } from "@/config.ts";
 import { prepareQRCodeForURL, printQRCode } from "@/utils/qr-code.ts";
 
@@ -20,7 +20,7 @@ export function createRequisitionsRequestAgent(token: Token) {
             "Authorization": `Bearer ${token.access}`,
           },
         },
-      ).then(convertFetchResponse).then((resp) => resp.accounts);
+      ).then(toJson<{ accounts: string[] }>).then((resp) => resp.accounts);
     },
     getRequisition: (institutionId: InstitutionID) => {
       const query = new URLSearchParams();
@@ -37,7 +37,17 @@ export function createRequisitionsRequestAgent(token: Token) {
             "Authorization": `Bearer ${token.access}`,
           },
         },
-      ).then(convertFetchResponse).then((resp) =>
+      ).then(
+        toJson<{
+          results: {
+            reference: string;
+            id: string;
+            agreement: string;
+            institution_id: string;
+            status: string;
+          }[];
+        }>,
+      ).then((resp) =>
         resp.results.find((
           result: { "institution_id": string; "status": string },
         ) =>
@@ -77,7 +87,7 @@ export function createRequisitionsRequestAgent(token: Token) {
             "user_language": "en",
           }),
         },
-      ).then(convertFetchResponse);
+      ).then(toJson<{ id: string; link: string }>);
       console.log(`Please scan the QR code to log in for ${institutionId}.`);
       await prepareQRCodeForURL(new URL(requisitionSignInLink)).then(
         printQRCode,

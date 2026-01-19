@@ -1,0 +1,161 @@
+{
+  "period": {
+    "start": "2025-12-01",
+    "end": "2025-12-31"
+  },
+  "balance": {
+    "opening": {
+      "amount": "47079.29",
+      "currency": "GBP"
+    },
+    "closing": {
+      "amount": "2500.00",
+      "currency": "GBP"
+    }
+  },
+  "transactions": [
+    {
+      "bookingDate": "2025-12-01",
+      "bookingDateTime": "2025-12-01T09:00:00Z",
+      "transactionAmount": {
+        "amount": "23.55",
+        "currency": "GBP"
+      },
+      "remittanceInformationUnstructured": "Interest Paid Gross",
+      "internalTransactionId": "dec_001_int",
+      "institution": {
+        "id": "FinTech_2QIJVOJV",
+        "softCode": "73-30-43",
+        "accountNumber": "********2592",
+        "accountType": "Saving"
+      },
+      "to": "Interest"
+    },
+    {
+      "bookingDate": "2025-12-05",
+      "bookingDateTime": "2025-12-05T10:00:00Z",
+      "transactionAmount": {
+        "amount": "-45.00",
+        "currency": "GBP"
+      },
+      "creditorName": "Happy Market",
+      "remittanceInformationUnstructured": "Groceries London Ref:DEC05",
+      "merchantCategoryCode": "5411",
+      "internalTransactionId": "dec_002_groc",
+      "institution": {
+        "id": "BankB_YVFV3PI9",
+        "accountNumber": "********2417",
+        "accountType": "CreditCard"
+      },
+      "to": "Happy Market"
+    },
+    {
+      "bookingDate": "2025-12-10",
+      "bookingDateTime": "2025-12-10T14:30:00Z",
+      "transactionAmount": {
+        "amount": "-120.50",
+        "currency": "GBP"
+      },
+      "creditorName": "Red Shop",
+      "remittanceInformationUnstructured": "Gift Shop Oxford Ref:GIFT01",
+      "merchantCategoryCode": "5947",
+      "internalTransactionId": "dec_003_gift",
+      "institution": {
+        "id": "BankB_YVFV3PI9",
+        "accountNumber": "********2417",
+        "accountType": "CreditCard"
+      },
+      "to": "Red Shop"
+    },
+    {
+      "bookingDate": "2025-12-15",
+      "bookingDateTime": "2025-12-15T09:00:00Z",
+      "transactionAmount": {
+        "amount": "2573.57",
+        "currency": "GBP"
+      },
+      "remittanceInformationUnstructured": "Salary December",
+      "internalTransactionId": "dec_004_sal",
+      "institution": {
+        "id": "FinTech_EA2MO327",
+        "softCode": "20-82-22",
+        "accountNumber": "********2016",
+        "accountType": "Current"
+      },
+      "to": "Employer Corp"
+    },
+    {
+      "bookingDate": "2025-12-18",
+      "bookingDateTime": "2025-12-18T19:00:00Z",
+      "transactionAmount": {
+        "amount": "-85.00",
+        "currency": "GBP"
+      },
+      "creditorName": "Blue Restaurant",
+      "remittanceInformationUnstructured": "Dinner London Ref:XMAS",
+      "merchantCategoryCode": "5812",
+      "internalTransactionId": "dec_005_din",
+      "institution": {
+        "id": "BankB_YVFV3PI9",
+        "accountNumber": "********2417",
+        "accountType": "CreditCard"
+      },
+      "to": "Blue Restaurant"
+    },
+    {
+      "bookingDate": "2025-12-20",
+      "bookingDateTime": "2025-12-20T11:00:00Z",
+      "transactionAmount": {
+        "amount": "-200.00",
+        "currency": "GBP"
+      },
+      "creditorName": "Silver Store",
+      "remittanceInformationUnstructured": "Electronics London Ref:TECH",
+      "merchantCategoryCode": "5732",
+      "internalTransactionId": "dec_006_tech",
+      "institution": {
+        "id": "BankB_YVFV3PI9",
+        "accountNumber": "********2417",
+        "accountType": "CreditCard"
+      },
+      "to": "Silver Store"
+    },
+    {
+      "bookingDate": "2025-12-24",
+      "bookingDateTime": "2025-12-24T16:00:00Z",
+      "transactionAmount": {
+        "amount": "-60.00",
+        "currency": "GBP"
+      },
+      "creditorName": "Green Cafe",
+      "remittanceInformationUnstructured": "Last Minute Food",
+      "merchantCategoryCode": "5411",
+      "internalTransactionId": "dec_007_food",
+      "institution": {
+        "id": "FinTech_EA2MO327",
+        "softCode": "20-82-22",
+        "accountNumber": "********2016",
+        "accountType": "Current"
+      },
+      "to": "Green Cafe"
+    },
+    {
+      "bookingDate": "2025-12-28",
+      "bookingDateTime": "2025-12-28T00:00:00Z",
+      "transactionAmount": {
+        "amount": "-46765.91",
+        "currency": "GBP"
+      },
+      "creditorName": "Mortgage Completion",
+      "remittanceInformationUnstructured": "House Purchase Final Payment",
+      "internalTransactionId": "dec_008_house",
+      "institution": {
+        "id": "FinTech_2QIJVOJV",
+        "softCode": "73-30-43",
+        "accountNumber": "********2592",
+        "accountType": "Saving"
+      },
+      "to": "Solicitors"
+    }
+  ]
+}

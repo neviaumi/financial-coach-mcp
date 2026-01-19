@@ -1,8 +1,35 @@
 import type { Statement, Transaction } from "@app/open-banking/types";
 import { readAll } from "@std/io/read-all";
 import { filePathRelativeToCacheDir } from "@app/lib/workspace";
+import type { YearMonthCode } from "@/year-month-code.ts";
 
-export function fromTransactions(transactions: Transaction[]): Statement {
+type BaseStatement = Omit<Statement, "period" | "balance">;
+
+export function withPeriod(
+  statement: BaseStatement,
+  period: Statement["period"],
+): BaseStatement & { period: Statement["period"] } {
+  return Object.assign(statement, {
+    period,
+  });
+}
+
+export function withBalance(
+  statement: BaseStatement,
+  balance: Statement["balance"],
+): BaseStatement & { balance: Statement["balance"] } {
+  return Object.assign(statement, {
+    balance,
+  });
+}
+
+export function asStatement(statement: BaseStatement): Statement {
+  return statement as Statement;
+}
+
+export function fromTransactions(
+  transactions: Transaction[],
+): Omit<Statement, "period" | "balance"> {
   const transactionsSorted = transactions
     .map((transaction) => {
       const to = (() => {
@@ -16,31 +43,16 @@ export function fromTransactions(transactions: Transaction[]): Statement {
       });
     })
     .toSorted((a, b) =>
-      new Date(a.bookingDateTime).getTime() -
-      new Date(b.bookingDateTime).getTime()
+      new Date(a.valueDateTime ?? a.bookingDateTime).getTime() -
+      new Date(b.valueDateTime ?? b.bookingDateTime).getTime()
     );
-  const sum = transactionsSorted.reduce(
-    (acc, transaction) =>
-      acc + (parseFloat(transaction.transactionAmount.amount) * 100),
-    0.0,
-  ) / 100;
   return {
-    balance: {
-      opening: {
-        amount: "0",
-        currency: "GBP",
-      },
-      closing: {
-        amount: sum.toFixed(2),
-        currency: "GBP",
-      },
-    },
     transactions: transactionsSorted,
   };
 }
 
 export async function saveTransactionsAsMonthlyStatement(
-  yearMonthCode: string,
+  yearMonthCode: YearMonthCode,
   statement: Statement,
 ) {
   await Deno.mkdir(filePathRelativeToCacheDir("statements"), {
@@ -62,7 +74,9 @@ export async function saveTransactionsAsMonthlyStatement(
   });
 }
 
-export function getMonthlyStatement(yearMonthCode: string): Promise<Statement> {
+export function getMonthlyStatement(
+  yearMonthCode: YearMonthCode,
+): Promise<Statement> {
   return Deno.open(
     filePathRelativeToCacheDir(`statements/${yearMonthCode}.json`),
     {
