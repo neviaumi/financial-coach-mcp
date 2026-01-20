@@ -8,7 +8,8 @@
       "env": true,
       "read": true,
       "write": true,
-      "sys": true
+      "sys": true,
+      "run": true
     }
   },
   "imports": {

@@ -63,7 +63,9 @@ export function findBalance(
       balance.balanceType === "interimBooked"
     );
   } else {
-    balance = balances.find((balance) => balance.balanceType === "expected");
+    balance = balances.find((balance) =>
+      ["interimAvailable", "expected"].includes(balance.balanceType)
+    );
   }
   if (balance) return balance.balanceAmount;
   console.log(
