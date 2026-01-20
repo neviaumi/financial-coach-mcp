@@ -14,11 +14,11 @@ export const utilitiesStyles = css`
 export const themeStyles = css`
   ${unsafeCSS(themeCSS)};
 `;
+
 export function withWAStyles(styles: CSSResultGroup = []): CSSResultGroup {
   return [
     nativeStyles,
     utilitiesStyles,
-    themeStyles,
     ...(Array.isArray(styles) ? styles : [styles]),
   ];
 }

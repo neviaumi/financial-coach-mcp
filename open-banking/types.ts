@@ -1,4 +1,6 @@
 export type Account = {
+  // Chase don't come with cashAccountType
+  name?: string;
   resourceId: string;
   scan?: string;
   maskedPan?: string;

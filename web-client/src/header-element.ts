@@ -19,6 +19,54 @@ const elementNameStatementBalance = prefixedElementName<"statement-balance">(
 @customElement(elementNameStatementBalance)
 export class StatementBalanceElement extends SignalWatcher(LitElement) {
   static override styles = withWAStyles(css`
+    :host {
+      --negative-color: var(--wa-color-danger-fill-normal);
+      --positive-color: var(--wa-color-brand-fill-normal);
+    }
+    my-two-columns {
+      --content-percentage: var(--my-size-15);
+    }
+    :host::part(balance-negative) {
+      font-weight: var(--wa-font-weight-bold);
+      color: var(--negative-color);
+    }
+    :host::part(balance-positive) {
+      font-weight: var(--wa-font-weight-bold);
+      color: var(--positive-color);
+    }
+  `);
+  override render() {
+    const statementValue = statement.get();
+    if (!statementValue) return;
+    const sum = statementValue.transactions.reduce((sum, transaction) => {
+      return sum + parseFloat(transaction.transactionAmount.amount);
+    }, 0);
+    const isPossitiveAmount = sum >= 0;
+    return html`
+      <my-two-columns>
+        <label>Statement Balance:</label>
+        <span part="${isPossitiveAmount
+          ? "balance-positive"
+          : "balance-negative"}">
+          ${isPossitiveAmount ? "+" : "-"}<wa-format-number
+            type="currency"
+            currency="GBP"
+            value="${Math.abs(sum)}"
+            lang="en-GB"
+          ></wa-format-number>
+        </span>
+      </my-two-columns>
+    `;
+  }
+}
+
+const elementNameBankBalance = prefixedElementName<"bank-balance">(
+  "bank-balance",
+);
+
+@customElement(elementNameBankBalance)
+export class BankBalanceElement extends SignalWatcher(LitElement) {
+  static override styles = withWAStyles(css`
     my-two-columns {
       --content-percentage: var(--my-size-15);
     }
@@ -47,7 +95,7 @@ export class StatementBalanceElement extends SignalWatcher(LitElement) {
               day="2-digit"
               month="short"
               year="numeric"
-            ></wa-format-date>:</span><br />
+            ></wa-format-date></span><br />
           <wa-format-number
             part="balance"
             type="currency"
@@ -123,16 +171,26 @@ export class InstitutionListElement extends SignalWatcher(LitElement) {
       font-size: var(--wa-font-size-xl);
       margin-bottom: var(--wa-space-s);
     }
+    wa-divider {
+      --color: var(--wa-color-border-quiet);
+    }
     .my-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--wa-space-2xs);
+      grid-template-columns:
+        var(--my-size-24) var(--my-size-24) var(--my-size-24);
+      gap: var(--wa-space-m);
     }
     :host::part(bank-account-listing) {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: var(--wa-space-xs);
+    }
+    :host::part(institution) {
+      margin-bottom: var(--wa-space-m);
+      width: 100%;
+      justify-content: center;
+      font-weight: var(--wa-font-weight-bold);
     }
     :host::part(account) {
       margin: var(--my-size-0);
@@ -162,7 +220,8 @@ export class InstitutionListElement extends SignalWatcher(LitElement) {
           ([institutionId, accounts]) =>
             html`
               <section title="${institutionId}" part="bank-account-listing">
-                <wa-tag>${institutionId}</wa-tag>
+                <wa-tag variant="brand" appearance="outlined" part="institution"
+                >${institutionId}</wa-tag>
                 <ul>
                   ${repeat(
                     accounts,
@@ -177,6 +236,7 @@ export class InstitutionListElement extends SignalWatcher(LitElement) {
                             .accountType}</span><br />
                           <span part="account-number">${accountNumber}</span>
                         </li>
+                        <wa-divider></wa-divider>
                       `;
                     },
                   )}
@@ -231,6 +291,8 @@ export class HeaderElement extends LitElement {
           <my-institution-list></my-institution-list>
           <div class="row2-right">
             <my-statement-date-range></my-statement-date-range>
+            <wa-divider></wa-divider>
+            <my-bank-balance></my-bank-balance>
             <wa-divider></wa-divider>
             <my-statement-balance></my-statement-balance>
           </div>

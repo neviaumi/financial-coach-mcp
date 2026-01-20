@@ -6,7 +6,7 @@ import { toYearMonthCode } from "@app/bank-statement/year-month-code";
 import { Task } from "@lit/task";
 import { handletaskError } from "@/utils.ts";
 import { statement } from "@/signals.ts";
-import { withWAStyles } from "@/wa-styles.ts";
+import { themeStyles, withWAStyles } from "@/wa-styles.ts";
 import "@wa/components/divider/divider.js";
 
 const elementName = prefixedElementName<"page">("page");
@@ -18,8 +18,10 @@ const cssVariables = css`
     --wa-font-family-longform: "Roboto Mono", monospace;
     --wa-color-surface-default: #f8f7f1;
     --wa-color-brand-fill-normal: #0288d4;
-    --wa-color-brand-fill-loud: #eb5a40;
+    --wa-color-danger-fill-normal: #eb5a40;
     --wa-color-border-quiet: #e8e6d9;
+    --wa-color-brand-on-quiet: #4a4940;
+    --wa-color-brand-border-loud: #016ca9;
     --my-grid-system-m: 0.25rem; /* 4px (assuming 1rem=16px) */
     --my-grid-system-l: 0.5rem; /* 8px */
     --my-grid-system-xl: 1rem; /* 16px */
@@ -87,6 +89,7 @@ const cssVariables = css`
 @customElement(elementName)
 export class PageElement extends LitElement {
   static override styles = withWAStyles([
+    themeStyles,
     cssVariables,
     css`
       main {
