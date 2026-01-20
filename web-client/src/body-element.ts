@@ -109,7 +109,7 @@ const columns = [
 export class BodyElement extends LitElement {
   static override styles = withWAStyles(css`
     :host {
-      --payout-color: var(--wa-color-brand-fill-loud);
+      --payout-color: var(--wa-color-danger-fill-normal);
       --income-color: var(--wa-color-brand-fill-normal);
     }
     my-data-table::part(cell) {

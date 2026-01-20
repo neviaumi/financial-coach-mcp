@@ -50,7 +50,7 @@ export function getAccountType(account: Account) {
   if (account.cashAccountType === "SVGS") {
     return "Saving" as const;
   }
-  return "Generic" as const;
+  return account.name ?? "Generic" as const;
 }
 
 export function findBalance(
