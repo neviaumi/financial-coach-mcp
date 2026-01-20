@@ -4,8 +4,8 @@
 # Print commands and their arguments as they are executed.
 set -e
 
-APP_NAME="mcp-banking"
-APP_DESCRIPTION="Financial Coach Banking Service"
+APP_NAME="financial-coach-client"
+APP_DESCRIPTION="Financial Coach Client"
 
 echo "--- Starting systemd service installation ---"
 

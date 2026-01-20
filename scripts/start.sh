@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
+
 set -ex
 
-
-MODE=${1:---dev}
-
-if [ "$MODE" == "--dev" ]; then
-    deno serve -P --port 8084 --watch-hmr ./server/main.ts
-else
-    $DENO_HOME/bin/deno serve -P --port 8084 ./server/main.ts
-fi
+tmux new-window -n "financial-coach" "deno task -f '@app/server' start"
+tmux split-window -h "deno task -f '@app/web-client' start"
+tmux select-window -t "financial-coach"

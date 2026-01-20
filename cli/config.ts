@@ -21,7 +21,10 @@ if (!APP_GO_CARD_LESS_SECRET_ID || !APP_GO_CARD_LESS_SECRET_KEY) {
 
 export const APP_OPENBANKING_HOST = APP_ENV === "DEV"
   ? "127.0.0.1"
-  : "banking.dk-home-pi.net";
+  : Deno.env.get("APP_OPENBANKING_HOST");
+if (!APP_OPENBANKING_HOST) {
+  throw new Error("Missing APP_OPENBANKING_HOST enviroment variable!");
+}
 
 export const APP_ENABLED_REQUESITIONS: InstitutionID[] = APP_ENV === "DEV"
   ? ["BARCLAYS_BUKBGB22"]

@@ -29,8 +29,8 @@ fi
 
 # 3. Remove the service file
 echo "3. Removing the service file: ${APP_NAME}..."
-if [ -f "${APP_NAME}" ]; then
-    sudo rm "${APP_NAME}"
+if [ -f "${APP_FILE}" ]; then
+    sudo rm "${APP_FILE}"
     echo "   Service file '${APP_NAME}' removed."
 else
     echo "   Service file '${APP_NAME}' not found, skipping removal."

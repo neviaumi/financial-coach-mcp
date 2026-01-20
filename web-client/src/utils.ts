@@ -1,4 +1,4 @@
-import { TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 
 export function isError(e: unknown): e is Error {
   if (!Error.isError(e)) {

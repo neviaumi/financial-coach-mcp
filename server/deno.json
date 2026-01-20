@@ -1,6 +1,12 @@
 {
+  "name": "@app/server",
+  "exports": {},
   "test": {
     "permissions": "default"
+  },
+  "tasks": {
+    "start": "bash ./scripts/start.sh",
+    "systemd:install": "bash ./scripts/systemd/install.sh"
   },
   "permissions": {
     "default": {

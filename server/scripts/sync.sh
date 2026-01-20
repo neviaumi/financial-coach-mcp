@@ -9,7 +9,7 @@ if [ "$MODE" == "--dev" ]; then
     -P \
     ./cli/sync.ts
 else
-    APP_OPENBANKING_HOST="192.168.0.16" APP_ENV="PROD" deno \
+    APP_ENV="PROD" deno \
     -P \
     ./cli/sync.ts
 fi
