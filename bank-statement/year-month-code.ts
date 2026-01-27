@@ -36,3 +36,16 @@ export function toYearMonthCode(
     return yearMonthCode;
   } else throw new InvalidYearMonthCodeError(yearMonthCode);
 }
+
+export function dateFromYearMonthCode(
+  yearMonthCode: string,
+): Temporal.PlainDate {
+  if (yearMonthCode === "now") {
+    return Temporal.Now.plainDateISO().with({ day: 1 });
+  }
+  if (!isYearMonthCode(yearMonthCode)) {
+    throw new InvalidYearMonthCodeError(yearMonthCode);
+  }
+  const [year, month] = yearMonthCode.split("M");
+  return new Temporal.PlainDate(parseInt(year), parseInt(month, 10), 1);
+}

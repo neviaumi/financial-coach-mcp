@@ -1,5 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getMonthlyStatement } from "@app/bank-statement";
+import { toYearMonthCode } from "@app/bank-statement/year-month-code";
+
 import * as z from "zod";
 
 const server = new McpServer({
@@ -84,7 +86,7 @@ server.registerTool("getMonthlyBankStatement", {
   },
 }, async ({ yearMonthCode }) => {
   try {
-    const statement = await getMonthlyStatement(yearMonthCode);
+    const statement = await getMonthlyStatement(toYearMonthCode(yearMonthCode));
     return {
       content: [{
         "type": "text",

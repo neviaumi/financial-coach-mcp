@@ -3,7 +3,7 @@ import { customElement } from "lit/decorators.js";
 import { statement } from "@/signals.ts";
 import { prefixedElementName } from "@/prefixed-element-name.ts";
 import { createColumnHelper, getValueFromInfo } from "@/data-table.ts";
-import type { Statement } from "@app/open-banking/types";
+import type { Statement } from "@app/bank-statement/types";
 import { parseMccCodeToLabel } from "@app/open-banking/mcc";
 import { withWAStyles } from "@/wa-styles.ts";
 

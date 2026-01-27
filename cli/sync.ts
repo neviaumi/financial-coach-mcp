@@ -1,5 +1,13 @@
 import { APP_ENABLED_REQUESITIONS } from "@/config.ts";
-import { toYearMonthCode } from "@app/bank-statement/year-month-code";
+import {
+  getStableStatementStartDate,
+  getStatementMonthRange,
+} from "@app/bank-statement/date";
+
+import {
+  dateFromYearMonthCode,
+  toYearMonthCode,
+} from "@app/bank-statement/year-month-code";
 import {
   Credentials,
   getAccessToken,
@@ -20,7 +28,6 @@ import {
   getAccountNumber,
   getAccountSortCode,
   getAccountType,
-  getConfirmedTransactionDateRange,
   isCreditCardAccount,
 } from "@/open-banking/accounts.ts";
 import {
@@ -30,6 +37,10 @@ import {
   withBalance,
   withPeriod,
 } from "@app/bank-statement";
+if (Deno.args.length < 1) {
+  throw new Error("use [yearMonthCode|now]");
+}
+const [yearMonthCodeInput] = Deno.args;
 
 await using cache = await initializeCache();
 function withThirtyTwoDayCache(key: string) {
@@ -52,8 +63,12 @@ const { refresh } = await cache.withCache(
 )(initializeAccessToken)();
 const accessToken: string = await getAccessToken(refresh);
 const today = Temporal.Now.plainDateISO();
-const { startDate, endDate } = getConfirmedTransactionDateRange(
-  today,
+const { startDate, endDate } = getStatementMonthRange(
+  getStableStatementStartDate(
+    dateFromYearMonthCode(
+      yearMonthCodeInput,
+    ),
+  ),
 );
 const yearMonthCode = toYearMonthCode(startDate);
 

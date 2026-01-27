@@ -7,18 +7,6 @@ import type {
   Transaction,
 } from "@app/open-banking/types";
 
-export function getConfirmedTransactionDateRange(today: Temporal.PlainDate) {
-  let startDate = today.subtract({ days: 8 }).with({ day: 1 });
-  let endDate = startDate.with({ day: startDate.daysInMonth });
-
-  if (today.since(endDate).total("day") < 8) {
-    startDate = startDate.subtract({ months: 1 }).with({ day: 1 });
-    endDate = startDate.with({ day: startDate.daysInMonth });
-  }
-
-  return { startDate, endDate };
-}
-
 export function isCreditCardAccount(account: Account): boolean {
   return account.cashAccountType === "CARD";
 }

@@ -1,2 +1,2 @@
-import type { Statement } from "@app/open-banking/types";
+import type { Statement } from "@app/bank-statement/types";
 export type Trnansactions = Statement["transactions"];

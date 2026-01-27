@@ -9,3 +9,5 @@
 *.orig
 *.pyc
 *.swp
+
+.zed/
