@@ -1,4 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
+import { map } from "lit/directives/map.js";
 import { customElement } from "lit/decorators.js";
 import { statement } from "@/signals.ts";
 import { prefixedElementName } from "@/prefixed-element-name.ts";
@@ -9,6 +11,69 @@ import { withWAStyles } from "@/wa-styles.ts";
 
 import "@wa/components/format-date/format-date.js";
 import "@wa/components/format-number/format-number.js";
+import "@wa/components/card/card.js";
+
+const aiReviewElementName = prefixedElementName<"ai-review">("ai-review");
+
+@customElement(aiReviewElementName)
+export class AiReviewElement extends LitElement {
+  static override styles = withWAStyles(css`
+    wa-card::part(header) {
+      padding-top: var(--wa-space-l);
+      padding-bottom: var(--wa-space-l);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    wa-divider {
+      --color: var(--wa-color-brand-fill-normal);
+    }
+    .margin-0 {
+      margin: 0;
+    }
+
+    wa-card h3 {
+      margin-top: var(--wa-space-m);
+    }
+    wa-card h3.margin-top-0 {
+      margin-top: 0;
+    }
+  `);
+  override render() {
+    const aiReview = statement.get()?.aiReview;
+    if (!aiReview) return nothing;
+    return html`
+      <wa-card>
+        <h2 slot="header" class="margin-0">AI Review</h2>
+        <article title="AI Review">
+          <section title="Insight Summary">
+            <h3 class="margin-top-0">Insight Summary</h3>
+            ${unsafeHTML(aiReview.insightSummary.html)}
+          </section>
+          <section title="Rationale">
+            <h3>Rationale</h3>
+            <ul>
+              ${map(aiReview.analysisRationale, (rationale) =>
+                html`
+                  <li>${unsafeHTML(rationale.html)}</li>
+                `)}
+            </ul>
+          </section>
+          <section title="Action Plans">
+            <h3>Action Plans</h3>
+            <ul>
+              ${map(aiReview.actionPlan, (actionPlan) =>
+                html`
+                  <li>${unsafeHTML(actionPlan.html)}</li>
+                `)}
+            </ul>
+          </section>
+        </article>
+      </wa-card>
+      <wa-divider></wa-divider>
+    `;
+  }
+}
 
 const elementName = prefixedElementName<"body">("body");
 type StatementTransaction = Statement["transactions"][number];
@@ -150,6 +215,7 @@ export class BodyElement extends LitElement {
     const transactions = statement.get()?.transactions;
     if (!transactions) return nothing;
     return html`
+      <my-ai-review></my-ai-review>
       <my-data-table
         .calculateRowTitle="${this.calculateRowTitle}"
         .data="${transactions}"

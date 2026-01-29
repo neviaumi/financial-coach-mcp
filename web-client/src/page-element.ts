@@ -22,6 +22,7 @@ const cssVariables = css`
     --wa-color-border-quiet: #e8e6d9;
     --wa-color-brand-on-quiet: #4a4940;
     --wa-color-brand-border-loud: #016ca9;
+    --wa-color-surface-border: #e8e6d9;
     --my-grid-system-m: 0.25rem; /* 4px (assuming 1rem=16px) */
     --my-grid-system-l: 0.5rem; /* 8px */
     --my-grid-system-xl: 1rem; /* 16px */
