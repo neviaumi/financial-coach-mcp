@@ -4,7 +4,7 @@
       "command": "deno",
       "args": [
         "run",
-        "-A",
+        "-P",
         "/Users/davidng/WebstormProjects/financial-coach-mcp/mcp/stdio.ts"
       ]
     }

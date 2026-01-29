@@ -1,29 +1,6 @@
 import { assertEquals, assertThrows } from "@std/assert";
-import {
-  getAccountNumber,
-  getAccountSortCode,
-  getConfirmedTransactionDateRange,
-} from "./accounts.ts";
+import { getAccountNumber, getAccountSortCode } from "./accounts.ts";
 import type { Account } from "@app/open-banking/types";
-
-[
-  [
-    Temporal.PlainDate.from("2025-02-05"),
-    ["2024-12-01", "2024-12-31"],
-  ] as const,
-  [
-    Temporal.PlainDate.from("2025-02-12"),
-    ["2025-01-01", "2025-01-31"],
-  ] as const,
-].forEach((
-  [mockDate, [mockStart, mockEnd]],
-) =>
-  Deno.test(`Get Date Range from ${mockDate}`, () => {
-    const { startDate, endDate } = getConfirmedTransactionDateRange(mockDate);
-    assertEquals(startDate.toString(), mockStart);
-    assertEquals(endDate.toString(), mockEnd);
-  })
-);
 
 [
   ["CARD", {

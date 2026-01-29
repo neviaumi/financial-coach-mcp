@@ -46,19 +46,3 @@ export type Transaction = {
   internalTransactionId: string;
   institution: Institution;
 };
-
-export type Statement = {
-  period: {
-    start: string;
-    end: string;
-  };
-  balance: {
-    referenceDate: string;
-    amount: Amount;
-  };
-  transactions: Array<
-    Transaction & {
-      to: string;
-    }
-  >;
-};

@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "@/config.ts";
 import { toJson } from "@app/lib/fetch";
 import type { YearMonthCode } from "@app/bank-statement/year-month-code";
-import type { Statement } from "@app/open-banking/types";
+import type { Statement } from "@app/bank-statement/types";
 
 export function getMonthlyStatement(
   yearMonthCode: YearMonthCode,

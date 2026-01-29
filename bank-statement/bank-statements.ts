@@ -1,4 +1,4 @@
-import type { Statement, Transaction } from "@app/open-banking/types";
+import type { Statement, Transaction } from "@/types.ts";
 import { readAll } from "@std/io/read-all";
 import { filePathRelativeToCacheDir } from "@app/lib/workspace";
 import type { YearMonthCode } from "@/year-month-code.ts";

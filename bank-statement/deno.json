@@ -2,10 +2,13 @@
   "name": "@app/bank-statement",
   "exports": {
     ".": "./bank-statements.ts",
-    "./year-month-code": "./year-month-code.ts"
+    "./year-month-code": "./year-month-code.ts",
+    "./date": "./date.ts",
+    "./types": "./types.ts"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
+    "@std/testing": "jsr:@std/testing@1.0.17",
     "@std/io": "jsr:@std/io@0.225.2",
     "@/": "./"
   }
