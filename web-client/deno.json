@@ -2,7 +2,8 @@
   "name": "@app/web-client",
   "tasks": {
     "start": "bash ./scripts/start.sh",
-    "systemd:install": "bash ./scripts/systemd/install.sh"
+    "systemd:install": "bash ./scripts/systemd/install.sh",
+    "systemd:restart": "bash ./scripts/systemd/restart.sh"
   },
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext", "deno.ns", "deno.unstable"]
