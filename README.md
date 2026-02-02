@@ -32,6 +32,7 @@ graph TD
 
 *   **Deno**: Ensure Deno is installed (v2.0+ recommended).
 *   **GoCardless Account**: You need a Secret ID and Key from GoCardless to access Open Banking APIs.
+*   **rclone**: Required for Google Drive backups. Ensure you have a remote named `gdrive` configured.
 
 ### Configuration
 
@@ -50,15 +51,15 @@ No explicit install step is needed beyond having Deno. The dependencies are mana
 
 ### Quick Start
 
-1.  **Sync Data**: Fetch your latest bank data.
+1.  **Sync Data**: Fetch your latest bank data and backup to Google Drive.
     ```bash
     # Sync for a specific month (Format: YYYYMmm)
-    deno run -A cli/sync.ts 2026M01
+    bash ./scripts/sync.sh 2026M01
     ```
 
 2.  **Start the System**: Launch both the Server and Web Client.
     ```bash
-    deno task start
+    bash ./scripts/start.sh
     ```
     *   **Server**: Runs on `http://localhost:8084`
     *   **Web Client**: Runs on `http://localhost:8080`
@@ -67,10 +68,10 @@ No explicit install step is needed beyond having Deno. The dependencies are mana
 
 ### CLI (`/cli`)
 
-The CLI is the entry point for data ingestion. It handles the complexity of OAuth flows and token management with Open Banking providers.
+The CLI is the entry point for data ingestion. It handles the complexity of OAuth flows and token management with Open Banking providers. It also automates backups to Google Drive via `rclone`.
 
-*   **Key Command**: `deno run -A cli/sync.ts [YearMonthCode]`
-*   **Output**: Saves standardized JSON statements to `.cache/statements/`.
+*   **Key Command**: `./scripts/sync.sh [YearMonthCode]`
+*   **Output**: Saves standardized JSON statements to `.cache/statements/` and copies them to `gdrive:Consolidated Statements/json/`.
 
 ### Server (`/server`)
 

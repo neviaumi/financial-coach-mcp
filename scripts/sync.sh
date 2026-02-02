@@ -29,3 +29,4 @@ else
 fi
 
 echo "Analysis @.cache/statements/$YEAR_MONTH_CODE.json" | GEMINI_SYSTEM_MD=true gemini --approval-mode "auto_edit"
+rclone copyto ".cache/statements/$YEAR_MONTH_CODE.json"  "gdrive:Consolidated Statements/json/$YEAR_MONTH_CODE.json"
