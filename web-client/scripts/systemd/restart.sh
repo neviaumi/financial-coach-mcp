@@ -6,4 +6,4 @@ set -e
 
 APP_NAME="financial-coach-client"
 
-systemctl restart "$SERVICE"
+sudo systemctl restart "$SERVICE"
