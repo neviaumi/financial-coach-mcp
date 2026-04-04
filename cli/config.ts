@@ -1,6 +1,6 @@
 import type { InstitutionID } from "@app/open-banking/institutions";
 
-export const APP_OPENBANKING_PORT = 80;
+export const APP_OPENBANKING_PORT = 8083;
 export const APP_ENV: "PROD" | "DEV" = Deno.env.get("APP_ENV") as
   | "PROD"
   | "DEV";

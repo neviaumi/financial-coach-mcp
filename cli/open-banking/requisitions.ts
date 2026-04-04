@@ -5,7 +5,7 @@ import {
   institutions,
 } from "@app/open-banking/institutions";
 import { Token } from "@app/open-banking/types";
-import { APP_OPENBANKING_HOST, APP_OPENBANKING_PORT } from "@/config.ts";
+import { APP_ENV, APP_OPENBANKING_HOST, APP_OPENBANKING_PORT } from "@/config.ts";
 import { prepareQRCodeForURL, printQRCode } from "@/utils/qr-code.ts";
 
 export function createRequisitionsRequestAgent(token: Token) {
@@ -80,7 +80,7 @@ export function createRequisitionsRequestAgent(token: Token) {
           body: JSON.stringify({
             "redirect": new URL(
               `/auth/${institutionId}/callback`,
-              `http://${APP_OPENBANKING_HOST}:${APP_OPENBANKING_PORT}`,
+              APP_ENV === "DEV" ? `http://${APP_OPENBANKING_HOST}:${APP_OPENBANKING_PORT}` : `http://${APP_OPENBANKING_HOST}`,
             ).toString(),
             "institution_id": institutionId,
             "reference": loginReference,
