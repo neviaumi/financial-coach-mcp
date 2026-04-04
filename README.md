@@ -62,7 +62,8 @@ No explicit install step is needed beyond having Deno. The dependencies are mana
     bash ./scripts/start.sh
     ```
     *   **Server**: Runs on `http://localhost:8084`
-    *   **Web Client**: Runs on `http://localhost:8080`
+    *   **Web Client**: Runs on `http://localhost:8080` (Dev) or `http://localhost:8081` (Production Preview)
+    *   **CLI (Open Banking Callback)**: Binds to `http://localhost:8083` temporarily when syncing new accounts
 
 ## Component Details
 
@@ -71,6 +72,7 @@ No explicit install step is needed beyond having Deno. The dependencies are mana
 The CLI is the entry point for data ingestion. It handles the complexity of OAuth flows and token management with Open Banking providers. It also automates backups to Google Drive via `rclone`.
 
 *   **Key Command**: `./scripts/sync.sh [YearMonthCode]`
+*   **Port**: `8083` (Used as the temporary localhost callback for Open Banking OAuth)
 *   **Output**: Saves standardized JSON statements to `.cache/statements/` and copies them to `gdrive:Consolidated Statements/json/`.
 
 ### Server (`/server`)
@@ -88,7 +90,7 @@ The backend engine powered by **Hono**.
 
 A reactive frontend built with **Vite**, **Lit**, and **WebAwesome**.
 
-*   **Port**: `8080` (Dev Server)
+*   **Port**: `8080` (Dev Server) / `8081` (Production Build Preview)
 *   **Features**:
     *   Monthly statement visualization.
     *   Transaction categorization (via MCP analysis context).

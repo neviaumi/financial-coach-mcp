@@ -9,7 +9,7 @@ export function getMonthlyStatement(
 ): Promise<Statement> {
   return fetch(
     new URL(
-      `/statements/${yearMonthCode}.json`,
+      `statements/${yearMonthCode}.json`,
       API_BASE_URL,
     ),
     options,

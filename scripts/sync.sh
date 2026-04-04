@@ -23,7 +23,7 @@ if [ "$MODE" == "--dev" ]; then
     -P \
     ./cli/sync.ts $YEAR_MONTH_CODE
 else
-    APP_OPENBANKING_HOST="192.168.0.16" APP_ENV="PROD" deno \
+    APP_OPENBANKING_HOST="bank.home.pi" APP_ENV="PROD" deno \
     -P \
     ./cli/sync.ts $YEAR_MONTH_CODE
 fi
