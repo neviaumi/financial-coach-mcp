@@ -10,6 +10,7 @@ export default defineConfig({
   preview: {
     port: 8081,
     strictPort: true,
+    allowedHosts: ["bank.home.pi"],
   },
   resolve: {
     alias: [
