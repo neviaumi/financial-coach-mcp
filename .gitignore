@@ -9,3 +9,6 @@
 *.orig
 *.pyc
 *.swp
+
+# Local specifications
+/specs/

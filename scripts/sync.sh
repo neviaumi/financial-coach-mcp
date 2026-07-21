@@ -18,9 +18,13 @@ if [[ -z "$YEAR_MONTH_CODE" ]]; then
     exit 1
 fi
 YEAR_MONTH_CODE=$(deno ./cli/print-statement-start-date.ts $YEAR_MONTH_CODE)
+
+# Fetch GoCardless secrets from GCP Secret Manager if not already set in the environment
+export GO_CARD_LESS_SECRET_ID=$(gcloud secrets versions access latest --secret="gocardless-secret-id")
+export GO_CARD_LESS_SECRET_KEY=$(gcloud secrets versions access latest --secret="gocardless-secret-key")
+
 if [ "$MODE" == "--dev" ]; then
-    APP_ENV="DEV" op run --env-file="./.env.dev" -- deno \
-    -P \
+    APP_ENV="DEV" deno -P \
     ./cli/sync.ts $YEAR_MONTH_CODE
 else
     APP_OPENBANKING_HOST="bank.home.pi" APP_ENV="PROD" deno \
@@ -28,5 +32,8 @@ else
     ./cli/sync.ts $YEAR_MONTH_CODE
 fi
 
-echo "Analysis @.cache/statements/$YEAR_MONTH_CODE.json" | GEMINI_SYSTEM_MD=true gemini --approval-mode "auto_edit"
+SYSTEM_INSTRUCTIONS=$(cat .gemini/system.md)
+agy --mode accept-edits --dangerously-skip-permissions -p "$SYSTEM_INSTRUCTIONS
+
+Analysis @.cache/statements/$YEAR_MONTH_CODE.json"
 rclone copyto ".cache/statements/$YEAR_MONTH_CODE.json"  "gdrive:Consolidated Statements/json/$YEAR_MONTH_CODE.json"
