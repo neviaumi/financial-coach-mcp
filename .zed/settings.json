@@ -13,15 +13,15 @@
     "**/Thumbs.db",
     "**/.classpath",
     "**/.settings",
-    "**/deno.lock",
+    "**/deno.lock"
   ],
   "lsp": {
     "deno": {
       "settings": {
         "deno": {
-          "enable": true,
-        },
-      },
+          "enable": true
+        }
+      }
     },
     "json-language-server": {
       "settings": {
@@ -29,16 +29,16 @@
           "schemas": [
             {
               "fileMatch": ["deno.json", "deno.jsonc"],
-              "url": "https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json",
+              "url": "https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json"
             },
             {
               "fileMatch": ["package.json"],
-              "url": "https://www.schemastore.org/package",
-            },
-          ],
-        },
-      },
-    },
+              "url": "https://www.schemastore.org/package"
+            }
+          ]
+        }
+      }
+    }
   },
   "languages": {
     "JavaScript": {
@@ -46,27 +46,27 @@
         "deno",
         "!typescript-language-server",
         "!vtsls",
-        "!eslint",
+        "!eslint"
       ],
-      "formatter": "language_server",
+      "formatter": "language_server"
     },
     "TypeScript": {
       "language_servers": [
         "deno",
         "!typescript-language-server",
         "!vtsls",
-        "!eslint",
+        "!eslint"
       ],
-      "formatter": "language_server",
+      "formatter": "language_server"
     },
     "TSX": {
       "language_servers": [
         "deno",
         "!typescript-language-server",
         "!vtsls",
-        "!eslint",
+        "!eslint"
       ],
-      "formatter": "language_server",
-    },
-  },
+      "formatter": "language_server"
+    }
+  }
 }

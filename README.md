@@ -1,14 +1,21 @@
 # Financial Coach MCP
 
-A personal finance ecosystem combining a CLI for data synchronization, a Deno-based Server (supporting the Model Context Protocol), and a modern Web Client dashboard.
+A personal finance ecosystem combining a CLI for data synchronization, a
+Deno-based Server (supporting the Model Context Protocol), and a modern Web
+Client dashboard.
 
 ## Overview
 
-Financial Coach MCP is designed to help you track your finances by synchronizing bank transactions via Open Banking (GoCardless) and presenting them in a unified dashboard. Beyond a standard UI, it exposes an **MCP (Model Context Protocol)** server, allowing AI assistants (like Claude) to securely access and analyze your financial data to provide personalized coaching.
+Financial Coach MCP is designed to help you track your finances by synchronizing
+bank transactions via Open Banking (GoCardless) and presenting them in a unified
+dashboard. Beyond a standard UI, it exposes an **MCP (Model Context Protocol)**
+server, allowing AI assistants (like Claude) to securely access and analyze your
+financial data to provide personalized coaching.
 
 ## Architecture
 
-The project consists of three main components that interact with a shared data layer:
+The project consists of three main components that interact with a shared data
+layer:
 
 ```mermaid
 graph TD
@@ -20,97 +27,113 @@ graph TD
     Web -- User Interface --> Browser
 ```
 
-1.  **CLI (`/cli`)**: Connects to Open Banking providers to fetch transactions and balances, normalizing them into monthly JSON statements stored in `.cache/`.
-2.  **Server (`/server`)**: A Deno + Hono server that:
-    *   Serves the JSON/CSV statements via a REST API.
-    *   Hosts the MCP endpoint for AI integration.
-3.  **Web Client (`/web-client`)**: A Vite + Lit application that visualizes the monthly statements.
+1. **CLI (`/cli`)**: Connects to Open Banking providers to fetch transactions
+   and balances, normalizing them into monthly JSON statements stored in
+   `.cache/`.
+2. **Server (`/server`)**: A Deno + Hono server that:
+   - Serves the JSON/CSV statements via a REST API.
+   - Hosts the MCP endpoint for AI integration.
+3. **Web Client (`/web-client`)**: A Vite + Lit application that visualizes the
+   monthly statements.
 
 ## Getting Started
 
 ### Prerequisites
 
-*   **Deno**: Ensure Deno is installed (v2.0+ recommended).
-*   **GoCardless Account**: You need a Secret ID and Key from GoCardless to access Open Banking APIs.
-*   **rclone**: Required for Google Drive backups. Ensure you have a remote named `gdrive` configured.
+- **Deno**: Ensure Deno is installed (v2.0+ recommended).
+- **GoCardless Account**: You need a Secret ID and Key from GoCardless to access
+  Open Banking APIs.
+- **rclone**: Required for Google Drive backups. Ensure you have a remote named
+  `gdrive` configured.
 
 ### Configuration
 
-Create a configuration environment (e.g., in your shell profile or `.env` equivalent). The CLI and Server require the following environment variables:
+Create a configuration environment (e.g., in your shell profile or `.env`
+equivalent). The CLI and Server require the following environment variables:
 
-| Variable | Description | Example |
-| :--- | :--- | :--- |
-| `APP_ENV` | Environment mode (`DEV` or `PROD`). | `DEV` |
-| `GO_CARD_LESS_SECRET_ID` | Your GoCardless Secret ID. | `your_secret_id` |
-| `GO_CARD_LESS_SECRET_KEY` | Your GoCardless Secret Key. | `your_secret_key` |
-| `APP_OPENBANKING_HOST` | Host for redirects (PROD only). | `financial-coach.com` |
+| Variable                  | Description                         | Example               |
+| :------------------------ | :---------------------------------- | :-------------------- |
+| `APP_ENV`                 | Environment mode (`DEV` or `PROD`). | `DEV`                 |
+| `GO_CARD_LESS_SECRET_ID`  | Your GoCardless Secret ID.          | `your_secret_id`      |
+| `GO_CARD_LESS_SECRET_KEY` | Your GoCardless Secret Key.         | `your_secret_key`     |
+| `APP_OPENBANKING_HOST`    | Host for redirects (PROD only).     | `financial-coach.com` |
 
 ### Installation
 
-No explicit install step is needed beyond having Deno. The dependencies are managed via `deno.json` workspaces.
+No explicit install step is needed beyond having Deno. The dependencies are
+managed via `deno.json` workspaces.
 
 ### Quick Start
 
-1.  **Sync Data**: Fetch your latest bank data and backup to Google Drive.
-    ```bash
-    # Sync for a specific month (Format: YYYYMmm)
-    bash ./scripts/sync.sh 2026M01
-    ```
+1. **Sync Data**: Fetch your latest bank data and backup to Google Drive.
+   ```bash
+   # Sync for a specific month (Format: YYYYMmm)
+   bash ./scripts/sync.sh 2026M01
+   ```
 
-2.  **Start the System**: Launch both the Server and Web Client.
-    ```bash
-    bash ./scripts/start.sh
-    ```
-    *   **Server**: Runs on `http://localhost:8084`
-    *   **Web Client**: Runs on `http://localhost:8080` (Dev) or `http://localhost:8081` (Production Preview)
-    *   **CLI (Open Banking Callback)**: Binds to `http://localhost:8083` temporarily when syncing new accounts
+2. **Start the System**: Launch both the Server and Web Client.
+   ```bash
+   bash ./scripts/start.sh
+   ```
+   - **Server**: Runs on `http://localhost:8084`
+   - **Web Client**: Runs on `http://localhost:8080` (Dev) or
+     `http://localhost:8081` (Production Preview)
+   - **CLI (Open Banking Callback)**: Binds to `http://localhost:8083`
+     temporarily when syncing new accounts
 
 ## Component Details
 
 ### CLI (`/cli`)
 
-The CLI is the entry point for data ingestion. It handles the complexity of OAuth flows and token management with Open Banking providers. It also automates backups to Google Drive via `rclone`.
+The CLI is the entry point for data ingestion. It handles the complexity of
+OAuth flows and token management with Open Banking providers. It also automates
+backups to Google Drive via `rclone`.
 
-*   **Key Command**: `./scripts/sync.sh [YearMonthCode]`
-*   **Port**: `8083` (Used as the temporary localhost callback for Open Banking OAuth)
-*   **Output**: Saves standardized JSON statements to `.cache/statements/` and copies them to `gdrive:Consolidated Statements/json/`.
+- **Key Command**: `./scripts/sync.sh [YearMonthCode]`
+- **Port**: `8083` (Used as the temporary localhost callback for Open Banking
+  OAuth)
+- **Output**: Saves standardized JSON statements to `.cache/statements/` and
+  copies them to `gdrive:Consolidated Statements/json/`.
 
 ### Server (`/server`)
 
 The backend engine powered by **Hono**.
 
-*   **Port**: `8084`
-*   **Endpoints**:
-    *   `/mcp`: Model Context Protocol entry point.
-    *   `/statements/:yearMonthCode.json`: Get raw statement data.
-    *   `/statements/:yearMonthCode.csv`: Download statement as CSV.
-*   **MCP Integration**: Configure your AI client (e.g., Claude Desktop) to point to this server to enable queries like "How much did I spend on groceries last month?".
+- **Port**: `8084`
+- **Endpoints**:
+  - `/mcp`: Model Context Protocol entry point.
+  - `/statements/:yearMonthCode.json`: Get raw statement data.
+  - `/statements/:yearMonthCode.csv`: Download statement as CSV.
+- **MCP Integration**: Configure your AI client (e.g., Claude Desktop) to point
+  to this server to enable queries like "How much did I spend on groceries last
+  month?".
 
 ### Web Client (`/web-client`)
 
 A reactive frontend built with **Vite**, **Lit**, and **WebAwesome**.
 
-*   **Port**: `8080` (Dev Server) / `8081` (Production Build Preview)
-*   **Features**:
-    *   Monthly statement visualization.
-    *   Transaction categorization (via MCP analysis context).
-    *   Responsive data tables.
-*   **Configuration**: Adjust `web-client/src/config.ts` if your API server runs on a different port.
+- **Port**: `8080` (Dev Server) / `8081` (Production Build Preview)
+- **Features**:
+  - Monthly statement visualization.
+  - Transaction categorization (via MCP analysis context).
+  - Responsive data tables.
+- **Configuration**: Adjust `web-client/src/config.ts` if your API server runs
+  on a different port.
 
 ## Contributing
 
-1.  **Workspace**: This is a Deno workspace. Run tests across all modules:
-    ```bash
-    deno test
-    ```
-2.  **Linting**:
-    ```bash
-    deno lint
-    ```
-3.  **Formatting**:
-    ```bash
-    deno fmt
-    ```
+1. **Workspace**: This is a Deno workspace. Run tests across all modules:
+   ```bash
+   deno test
+   ```
+2. **Linting**:
+   ```bash
+   deno lint
+   ```
+3. **Formatting**:
+   ```bash
+   deno fmt
+   ```
 
 ## License
 
