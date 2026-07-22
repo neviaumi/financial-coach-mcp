@@ -11,6 +11,10 @@ export const institutions = {
     id: "CHASE_CHASGB2L",
     name: "Chase Bank",
   },
+  ["AMERICAN_EXPRESS_AESUGB21"]: {
+    id: "AMERICAN_EXPRESS_AESUGB21",
+    name: "American Express",
+  },
 };
 
 export type InstitutionID = keyof (typeof institutions);
