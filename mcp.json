@@ -5,7 +5,7 @@
       "args": [
         "run",
         "-P",
-        "/Users/davidng/WebstormProjects/financial-coach-mcp/mcp/stdio.ts"
+        "/Users/davidng/WebstormProjects/financial-coach/mcp/stdio.ts"
       ]
     }
   }
