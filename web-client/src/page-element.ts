@@ -135,7 +135,6 @@ export class PageElement extends LitElement {
 
   private taskRenderPending = () => {
     return html`
-
     `;
   };
 

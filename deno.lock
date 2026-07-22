@@ -27,8 +27,8 @@
     "npm:fetch-to-node@2.1.0": "2.1.0",
     "npm:hono@4.11.3": "4.11.3",
     "npm:lit@3.3.2": "3.3.2",
-    "npm:open@10.1.2": "10.1.2",
     "npm:qrcode@1.5.4": "1.5.4",
+    "npm:vite@*": "7.2.7_@types+node@22.15.15_picomatch@4.0.3",
     "npm:vite@7.2.7": "7.2.7_@types+node@22.15.15_picomatch@4.0.3",
     "npm:zod@3.25.76": "3.25.76"
   },
@@ -404,7 +404,7 @@
         "@modelcontextprotocol/sdk",
         "concurrently",
         "node-fetch",
-        "open@10.2.0",
+        "open",
         "shell-quote",
         "spawn-rx",
         "ts-node",
@@ -1659,15 +1659,6 @@
         "wrappy"
       ]
     },
-    "open@10.1.2": {
-      "integrity": "sha512-cxN6aIDPz6rm8hbebcP7vrQNhvRcveZoJU72Y7vskh4oIm+BZwBECnx5nTmrlres1Qapvx27Qo1Auukpf8PKXw==",
-      "dependencies": [
-        "default-browser",
-        "define-lazy-prop",
-        "is-inside-container",
-        "is-wsl"
-      ]
-    },
     "open@10.2.0": {
       "integrity": "sha512-YgBpdJHPyQ2UE5x+hlSXcnejzAvD0b22U2OuAP+8OnlJT+PjWPxtgmGqKKc+RgTM63U9gN0YzrYc71R2WT/hTA==",
       "dependencies": [
@@ -2326,7 +2317,6 @@
         "dependencies": [
           "jsr:@std/assert@1",
           "jsr:@std/io@0.225.2",
-          "npm:open@10.1.2",
           "npm:qrcode@1.5.4"
         ]
       },
