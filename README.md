@@ -1,4 +1,4 @@
-# Financial Coach MCP
+# Financial Coach
 
 A personal finance ecosystem combining a CLI for data synchronization, a
 Deno-based Server (supporting the Model Context Protocol), and a modern Web
@@ -6,7 +6,7 @@ Client dashboard.
 
 ## Overview
 
-Financial Coach MCP is designed to help you track your finances by synchronizing
+Financial Coach is designed to help you track your finances by synchronizing
 bank transactions via Open Banking (GoCardless) and presenting them in a unified
 dashboard. Beyond a standard UI, it exposes an **MCP (Model Context Protocol)**
 server, allowing AI assistants (like Claude) to securely access and analyze your
