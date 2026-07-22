@@ -41,84 +41,96 @@ graph TD
 ### Prerequisites
 
 - **Deno**: Ensure Deno is installed (v2.0+ recommended).
-- **GoCardless Account**: You need a Secret ID and Key from GoCardless to access
-  Open Banking APIs.
+- **Google Cloud CLI (`gcloud`)**: Required by `./scripts/sync.sh` to retrieve
+  GoCardless credentials (`gocardless-secret-id` and `gocardless-secret-key`)
+  from GCP Secret Manager.
+- **Cloudflare CLI (`cloudflared`)**: Required by `./scripts/sync.sh` to create
+  a temporary HTTPS tunnel for Open Banking OAuth redirect callbacks.
+- **Antigravity CLI (`agy`)**: Required during sync to run automated AI
+  financial analysis on synchronized statements.
 - **rclone**: Required for Google Drive backups. Ensure you have a remote named
   `gdrive` configured.
+- **GoCardless Account**: Required to access Open Banking APIs.
 
 ### Configuration
 
-Create a configuration environment (e.g., in your shell profile or `.env`
-equivalent). The CLI and Server require the following environment variables:
+The CLI and Server rely on environment variables, which are automatically
+fetched or configured during operation:
 
-| Variable                  | Description                         | Example               |
-| :------------------------ | :---------------------------------- | :-------------------- |
-| `APP_ENV`                 | Environment mode (`DEV` or `PROD`). | `DEV`                 |
-| `GO_CARD_LESS_SECRET_ID`  | Your GoCardless Secret ID.          | `your_secret_id`      |
-| `GO_CARD_LESS_SECRET_KEY` | Your GoCardless Secret Key.         | `your_secret_key`     |
-| `APP_OPENBANKING_HOST`    | Host for redirects (PROD only).     | `financial-coach.com` |
+| Variable                       | Description                                 | Example / Default                                          |
+| :----------------------------- | :------------------------------------------ | :--------------------------------------------------------- |
+| `APP_ENV`                      | Environment mode (`DEV` or `PROD`).         | `DEV`                                                      |
+| `GO_CARD_LESS_SECRET_ID`       | GoCardless Secret ID.                       | Auto-fetched from GCP Secret Manager via `gcloud`          |
+| `GO_CARD_LESS_SECRET_KEY`      | GoCardless Secret Key.                      | Auto-fetched from GCP Secret Manager via `gcloud`          |
+| `APP_OPENBANKING_REDIRECT_URL` | Redirect URL for Open Banking callbacks.    | Auto-generated HTTPS URL via `cloudflared` tunnel in `DEV` |
+| `VITE_API_BASE_URL`            | Base API host for the Web Client dashboard. | Defaults to `http://localhost:8084`                        |
 
 ### Installation
 
-No explicit install step is needed beyond having Deno. The dependencies are
-managed via `deno.json` workspaces.
+No explicit install step is needed beyond having Deno and the required CLI tools
+(`gcloud`, `cloudflared`, `agy`, `rclone`). Project dependencies are managed via
+`deno.json` workspaces.
 
 ### Quick Start
 
-1. **Sync Data**: Fetch your latest bank data and backup to Google Drive.
+1. **Sync Data**: Fetch your latest bank data, analyze statements with AI, and
+   back up to Google Drive.
    ```bash
    # Sync for a specific month (Format: YYYYMmm)
    bash ./scripts/sync.sh 2026M01
    ```
+   _Note: Ensure `gcloud` is logged in and `cloudflared` is installed before
+   running sync._
 
-2. **Start the System**: Launch both the Server and Web Client.
+2. **Start the System**: Launch both the Server and Web Client simultaneously
+   using the unified orchestrator script.
    ```bash
    bash ./scripts/start.sh
    ```
    - **Server**: Runs on `http://localhost:8084`
-   - **Web Client**: Runs on `http://localhost:8080` (Dev) or
-     `http://localhost:8081` (Production Preview)
-   - **CLI (Open Banking Callback)**: Binds to `http://localhost:8083`
-     temporarily when syncing new accounts
+   - **Web Client**: Runs on Vite dev server (configured with
+     `VITE_API_BASE_URL`)
+   - **CLI (Open Banking Callback)**: Binds to port `8083` (tunneled dynamically
+     via `cloudflared`)
 
 ## Component Details
 
 ### CLI (`/cli`)
 
 The CLI is the entry point for data ingestion. It handles the complexity of
-OAuth flows and token management with Open Banking providers. It also automates
-backups to Google Drive via `rclone`.
+OAuth flows and token management with Open Banking providers.
 
+- **Prerequisites**: `gcloud` (fetches secrets), `cloudflared` (creates OAuth
+  callback tunnel), `agy` (runs AI analysis), and `rclone` (Google Drive
+  backup).
 - **Key Command**: `./scripts/sync.sh [YearMonthCode]`
-- **Port**: `8083` (Used as the temporary localhost callback for Open Banking
-  OAuth)
+- **Port**: `8083` (Used as the temporary callback port for Open Banking OAuth,
+  exposed via `cloudflared`)
 - **Output**: Saves standardized JSON statements to `.cache/statements/` and
-  copies them to `gdrive:Consolidated Statements/json/`.
+  copies them to Google Drive (`gdrive:` remote).
 
 ### Server (`/server`)
 
-The backend engine powered by **Hono**.
+The backend engine powered by **Hono** on Deno.
 
 - **Port**: `8084`
 - **Endpoints**:
   - `/mcp`: Model Context Protocol entry point.
   - `/statements/:yearMonthCode.json`: Get raw statement data.
   - `/statements/:yearMonthCode.csv`: Download statement as CSV.
-- **MCP Integration**: Configure your AI client (e.g., Claude Desktop) to point
-  to this server to enable queries like "How much did I spend on groceries last
-  month?".
+- **MCP Integration**: Point your AI assistant (e.g., Claude Desktop,
+  Antigravity) to this server to analyze transaction data.
 
 ### Web Client (`/web-client`)
 
 A reactive frontend built with **Vite**, **Lit**, and **WebAwesome**.
 
-- **Port**: `8080` (Dev Server) / `8081` (Production Build Preview)
 - **Features**:
   - Monthly statement visualization.
-  - Transaction categorization (via MCP analysis context).
+  - Transaction categorization and financial insights.
   - Responsive data tables.
-- **Configuration**: Adjust `web-client/src/config.ts` if your API server runs
-  on a different port.
+- **Runner**: Started concurrently alongside the server via
+  `bash ./scripts/start.sh` (or `deno task -f @app/web-client start`).
 
 ## Contributing
 

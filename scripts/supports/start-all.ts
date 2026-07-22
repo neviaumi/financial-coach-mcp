@@ -4,7 +4,7 @@ const clientPrefix = "\x1b[35m[client]\x1b[0m"; // Magenta
 async function pipeStream(
   reader: ReadableStreamDefaultReader<Uint8Array>,
   prefix: string,
-  streamType: "stdout" | "stderr"
+  streamType: "stdout" | "stderr",
 ) {
   const decoder = new TextDecoder();
   let buffer = "";
@@ -55,7 +55,9 @@ const clientCommand = new Deno.Command("deno", {
 console.log(`${serverPrefix} Starting server task...`);
 const serverChild = serverCommand.spawn();
 
-console.log(`${clientPrefix} Starting web-client task with VITE_API_BASE_URL=${apiBaseUrl}...`);
+console.log(
+  `${clientPrefix} Starting web-client task with VITE_API_BASE_URL=${apiBaseUrl}...`,
+);
 const clientChild = clientCommand.spawn();
 
 let exiting = false;
@@ -66,10 +68,14 @@ function cleanup() {
   console.log("\nShutting down both processes...");
   try {
     serverChild.kill("SIGINT");
-  } catch (_) {}
+  } catch (_) {
+    // ignore
+  }
   try {
     clientChild.kill("SIGINT");
-  } catch (_) {}
+  } catch (_) {
+    // ignore
+  }
 }
 
 Deno.addSignalListener("SIGINT", () => {
@@ -98,7 +104,9 @@ const serverStatusPromise = serverChild.status;
 const clientStatusPromise = clientChild.status;
 
 Promise.any([serverStatusPromise, clientStatusPromise]).then((status) => {
-  console.log(`One of the child processes exited (code: ${status.code}, success: ${status.success}). Shutting down...`);
+  console.log(
+    `One of the child processes exited (code: ${status.code}, success: ${status.success}). Shutting down...`,
+  );
   cleanup();
   Deno.exit(status.code);
 });
